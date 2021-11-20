@@ -1,9 +1,9 @@
 let roomCode = null;
 let X_O = null;
 let yourTurn = false;
-const boardContainer=document.querySelector(".board-container")
-const CodeInputContainer=document.querySelector(".room-code-input")
-const leaveBtn=document.querySelector(".leave-room-btn")
+const boardContainer = document.querySelector(".board-container");
+const CodeInputContainer = document.querySelector(".room-code-input");
+const leaveBtn = document.querySelector(".leave-room-btn");
 
 const frames = document.querySelectorAll(".frame");
 const frame0 = frames[0];
@@ -64,7 +64,7 @@ const checkForWin = () => {
   } else if (straightLinesCheck("1") || DiagonalLinesCheck("1")) {
     socket.emit("o_wins", { roomCode });
   } else {
-    checkForDraw()
+    checkForDraw();
   }
 };
 //check for draw
@@ -75,21 +75,37 @@ const checkForDraw = () => {
       isDraw = false;
     }
   });
-  console.log(isDraw)
-  if(isDraw){
-    socket.emit("draw",{roomCode})
+  console.log(isDraw);
+  if (isDraw) {
+    socket.emit("draw", { roomCode });
   }
 };
 //leave the room
-const leaveRoom=()=>{
-  socket.emit("leaveRoom",{roomCode})
+const leaveRoom = () => {
+  socket.emit("leaveRoom", { roomCode });
 
-  socket.on("leftRoom",()=>{
+  socket.on("leftRoom", () => {
     //hide board
-    boardContainer.classList.add("d-none")
+    boardContainer.classList.add("d-none");
     //show input
-    CodeInputContainer.classList.remove("d-none")})
-}
+    CodeInputContainer.classList.remove("d-none");
+  });
+};
+//reset everything
+const resetGame = () => {
+ frames.forEach((frame)=>{
+  frame.children[0].children[0].classList.remove("show");
+  frame.children[0].children[1].classList.remove("show");
+  frame.classList.remove("0")
+  frame.classList.remove("1")
+ })
+
+  console.log({yourTurn})
+  if(X_O=="1"){
+    yourTurn=true
+  }
+
+};
 //adding event listeners
 frames.forEach((f) => {
   f.addEventListener("click", () => {
@@ -100,7 +116,6 @@ frames.forEach((f) => {
         roomCode: roomCode,
       });
       //show the move on the board
-      console.log({ X_O });
       showXorO(f, X_O);
       yourTurn = false;
       checkForWin();
@@ -108,15 +123,16 @@ frames.forEach((f) => {
   });
 });
 //leave button event listener
-leaveBtn.addEventListener("click",()=>{
-  leaveRoom()
-})
+leaveBtn.addEventListener("click", () => {
+  leaveRoom();
+  resetGame()
+});
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
   //hide the room input
-  CodeInputContainer.classList.add("d-none")
+  CodeInputContainer.classList.add("d-none");
   //show the gameboard
-  boardContainer.classList.remove("d-none")
+  boardContainer.classList.remove("d-none");
   roomCode = m.roomCode;
   X_O = m.X_O;
   if (X_O == "1") {
@@ -138,11 +154,13 @@ socket.on("opponentMoved", (m) => {
 //when someone wins
 socket.on("gameFinished", ({ message }) => {
   alert(message);
+  resetGame()
 });
 
 //when math is draw
 socket.on("matchDraw", ({ message }) => {
   alert(message);
+  resetGame()
 });
 
 document.querySelector("#join-button").addEventListener("click", () => {
