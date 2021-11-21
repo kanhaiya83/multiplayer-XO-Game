@@ -1,0 +1,88 @@
+@import url("https://fonts.googleapis.com/css2?family=Comforter+Brush&display=swap");
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  max-width: 600px;
+  text-align: center;
+  margin: 0 auto;
+  font-family: "Comforter Brush";
+}
+.container .heading {
+  text-align: center;
+  padding: 2rem 0;
+  color: #5f5f5f;
+}
+.container .button-primary {
+  background-color: transparent;
+  color: #252525;
+  padding: 10px 10px;
+  border: 2px solid #000000;
+  width: 12rem;
+  margin: 15px 0;
+}
+.container .button-primary:focus {
+  outline: none;
+}
+.container .button-primary:hover {
+  background-color: #000000;
+  color: white;
+  cursor: pointer;
+}
+.container .input-container {
+  margin-top: 3rem;
+  height: 100%;
+}
+.container .input-container .join-room {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+.container .input-container .join-room .join-room-btn {
+  width: 8rem;
+}
+.container .input-container .join-room .room-code-input {
+  padding: 10px 5px;
+  text-align: center;
+  border: 1px solid #343434;
+  width: 12rem;
+  font-size: 0.8rem;
+}
+.container .input-container .join-room .room-code-input:focus {
+  outline: none;
+}
+.container .board-container {
+  width: 100%;
+  margin-top: 3rem;
+}
+.container .board-container .room-info {
+  display: flex;
+  justify-content: space-between;
+  font-family: "Times New Roman", Times, serif;
+}
+.container .board-container .svg-container {
+  padding-bottom: 50px;
+}
+.container .board-container .svg-container .cross,
+.container .board-container .svg-container .circle {
+  opacity: 0;
+  transition: opacity 300ms;
+}
+.container .board-container .svg-container .cross.show,
+.container .board-container .svg-container .circle.show {
+  opacity: 1;
+}
+.container .board-container .leave-room-btn {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.d-none {
+  display: none;
+}
+
+/*# sourceMappingURL=styles.css.map */

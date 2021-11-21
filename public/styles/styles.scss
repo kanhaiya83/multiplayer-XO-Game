@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=Comforter+Brush&display=swap');
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+  }
+  
+.container{
+    max-width: 600px;
+    text-align: center;
+    margin: 0 auto;
+    font-family:"Comforter Brush";
+    .heading{
+        text-align: center;
+        padding: 2rem 0;
+        color: #5f5f5f;
+
+    }
+    .button-primary{
+        &:focus{
+            outline: none;
+        }
+        &:hover{
+            background-color: #000000;
+            color: white;
+            cursor: pointer;
+        }
+        background-color: transparent;
+        color: #252525;
+        padding: 10px 10px;
+        border: 2px solid #000000;
+        width: 12rem;
+        margin: 15px 0;
+
+
+    }
+    .input-container{
+        margin-top: 3rem;
+        height: 100%;
+       .join-room{
+           display: flex;
+           flex-direction: column;
+           align-items: center;
+           margin-top: 2rem;
+           .join-room-btn{
+               width: 8rem;
+           }
+           .room-code-input{
+            &:focus{
+            outline: none;
+            }
+            padding: 10px 5px;
+            text-align: center;
+            border: 1px solid #343434;
+            width: 12rem;
+            font-size: 0.8rem;
+
+        }
+       }
+    }
+    .board-container {
+        width: 100%;
+        margin-top: 3rem;
+        .room-info{
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Times New Roman', Times, serif;
+        }
+        .svg-container{
+            padding-bottom: 50px;
+            .cross,
+            .circle {
+              opacity: 0;
+              transition: opacity 300ms;
+            }
+            .cross.show,
+            .circle.show {
+              opacity: 1;
+            }
+        }
+        .leave-room-btn{
+            text-align: center;
+            margin-top: 10px;
+        }
+      }
+}
+.d-none{
+    display: none;
+}

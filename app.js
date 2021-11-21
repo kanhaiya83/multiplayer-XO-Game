@@ -37,6 +37,11 @@ io.on("connection", function (socket) {
 
 
         socket.emit("joinedRoom",{message:"You have joined the room "+roomCode,X_O:X_O_object[roomCode],roomCode:roomCode})
+        if (io.sockets.adapter.rooms['room-'+roomCode]) 
+{
+   // result
+   ;
+}
         
     })
 

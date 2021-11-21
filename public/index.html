@@ -5,64 +5,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css">
+<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"> -->
     <script src="/socket.io.js"></script>
+    <link rel="stylesheet" href="styles/styles.css">
   </head>
-  <style>
-    * {
-      padding: 0;
-      margin: 0;
-      box-sizing: border-box;
-    }
-    .container {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .board-container {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-    .cross,
-    .circle {
-      opacity: 0;
-      transition: opacity 300ms;
-    }
-    .cross.show,
-    .circle.show {
-      opacity: 1;
-    }
-    .d-none{
-      display: none;
-    }
-    .leave-room-btn{
-      position: fixed;
-      top: 20px;
-      right:20px;
-    }
-    .input-heading{
-      color: #7c7c7c;
-      display: block;
-      margin-bottom: 3rem;
-      font-size: 2rem;
-    }
-  </style>
+  
   <body>
     <div class="container">
-      
-      <div class="room-code-input">
-        <span class="input-heading">Create or Join a room</span>
-       <div class="d-flex mb-4">
-        <input placeholder="Enter the roomcode"class="form-control" type="text" id="room-number">
-        <button class="btn btn-primary mx-4"id="join-button">Join</button>
-       </div>
+      <h1 class="heading">
+        XOXO
+      </h1>
+      <div class="input-container">
+        <div class="create-room">
+          <button class="create-room-btn button-primary">
+            Create Room
+          </button>
+        </div>
+        <div class="join-room">
+          <input type="text" class="room-code-input" placeholder="Enter room code!!">
+          <button class="join-room-btn button-primary">
+            Join Room
+          </button>
+        </div>
       </div>
       <div class="board-container d-none">
-        <button class="leave-room-btn btn btn-primary">Leave Room</button>
-        <svg
+        <div class="room-info">
+          <span class="room-number">Room-2390</span>
+        </div>
+        <div class="svg-container">
+          <svg
           xmlns="http://www.w3.org/2000/svg"
           width="329"
           height="331"
@@ -309,6 +280,8 @@
             </g>
           </g>
         </svg>
+        </div>
+        <button class="leave-room-btn  button-primary">Leave Room</button>
       </div>
     </div>
   </body>
@@ -318,3 +291,14 @@
 
   <script src="/index.js"></script>
 </html>
+<!-- <div class="container">
+      
+      <div class="room-code-input">
+        <span class="input-heading">Join a room</span>
+       <div class="d-flex mb-4">
+        <input placeholder="Enter the roomcode"class="form-control" type="text" id="room-number">
+        <button class="btn btn-primary mx-2"id="join-button">Join Room</button>
+       </div>
+      </div>
+      
+    </div> -->

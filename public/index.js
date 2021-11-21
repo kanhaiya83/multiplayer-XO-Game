@@ -2,8 +2,15 @@ let roomCode = null;
 let X_O = null;
 let yourTurn = false;
 const boardContainer = document.querySelector(".board-container");
-const CodeInputContainer = document.querySelector(".room-code-input");
 const leaveBtn = document.querySelector(".leave-room-btn");
+
+const inputContainer= document.querySelector(".input-container");
+
+const createRoomBtn = document.querySelector(".create-room-btn");
+const joinRoomBtn = document.querySelector(".join-room-btn");
+const roomCodeInput = document.querySelector(".room-code-input");
+
+const roomNumberContainer=document.querySelector(".room-number")
 
 const frames = document.querySelectorAll(".frame");
 const frame0 = frames[0];
@@ -15,6 +22,7 @@ const frame5 = frames[5];
 const frame6 = frames[6];
 const frame7 = frames[7];
 const frame8 = frames[8];
+
 const showXorO = (frame, xOro) => {
   frame.children[0].children[xOro].classList.add("show");
   frame.classList.add(xOro);
@@ -88,7 +96,7 @@ const leaveRoom = () => {
     //hide board
     boardContainer.classList.add("d-none");
     //show input
-    CodeInputContainer.classList.remove("d-none");
+    inputContainer.classList.remove("d-none");
   });
 };
 //reset everything
@@ -125,14 +133,17 @@ frames.forEach((f) => {
 //leave button event listener
 leaveBtn.addEventListener("click", () => {
   leaveRoom();
-  resetGame()
+  resetGame();
 });
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
   //hide the room input
-  CodeInputContainer.classList.add("d-none");
+  inputContainer.classList.add("d-none");
   //show the gameboard
   boardContainer.classList.remove("d-none");
+  //display the room code
+  roomNumberContainer.innerHTML="Room:"+m.roomCode
+  //initialize roomcode and xORo
   roomCode = m.roomCode;
   X_O = m.X_O;
   if (X_O == "1") {
@@ -163,8 +174,15 @@ socket.on("matchDraw", ({ message }) => {
   resetGame()
 });
 
-document.querySelector("#join-button").addEventListener("click", () => {
+joinRoomBtn.addEventListener("click", () => {
   socket.emit("joinRoom", {
-    roomCode: document.querySelector("#room-number").value,
+    roomCode: roomCodeInput.value,
   });
 });
+
+createRoomBtn.addEventListener("click",()=>{
+  const randomRoomNumber=Math.floor(Math.random() * 9000) +  1000
+  socket.emit("joinRoom", {
+    roomCode: randomRoomNumber,
+  });
+})
