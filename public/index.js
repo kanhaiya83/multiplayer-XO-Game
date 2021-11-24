@@ -1,6 +1,7 @@
 let roomCode = null;
 let X_O = null;
 let yourTurn = false;
+let opponentIsReady=false;
 const boardContainer = document.querySelector(".board-container");
 const leaveBtn = document.querySelector(".leave-room-btn");
 
@@ -156,9 +157,20 @@ const DiagonalLinesCheck = (xo) => {
 //check both straight and diagonal combination for both X and O
 const checkForWin = () => {
   if (straightLinesCheck("0") || DiagonalLinesCheck("0")) {
-    socket.emit("x_wins", { roomCode });
+    console.log({X_O})
+    if(X_O=="0"){
+      socket.emit("playerWon")
+      showModal("win")
+      opponentIsReady=false
+
+    }
   } else if (straightLinesCheck("1") || DiagonalLinesCheck("1")) {
-    socket.emit("o_wins", { roomCode });
+    console.log({X_O})
+    if(X_O=="1"){
+      socket.emit("playerWon")
+      showModal("win")
+      opponentIsReady=false
+    }
   } else {
     checkForDraw();
   }
@@ -216,7 +228,7 @@ const validateRoomCode = (code) => {
 //adding event listeners
 frames.forEach((f) => {
   f.addEventListener("click", () => {
-    if (!f.classList.contains(0) && !f.classList.contains(1) && yourTurn) {
+    if (!f.classList.contains(0) && !f.classList.contains(1) && yourTurn && opponentIsReady ) {
       //emit to server that player has moved
       socket.emit("playerMoved", {
         place: f.dataset.serial,
@@ -273,6 +285,8 @@ socket.on("opponentJoined", ({ message, opponentUsername }) => {
     username: playerUsername.textContent,
     roomCode: roomCode,
   });
+  opponentIsReady=true
+
 });
 socket.on("opponentLeft", () => {
   showNotification("Opponent left!");
@@ -283,6 +297,7 @@ socket.on("opponentLeft", () => {
 socket.on("opponentUsername", ({ username }) => {
   showNotification("You are playing against " + username);
   updateOpponent(username);
+  opponentIsReady=true
 });
 socket.on("changedOpponentUsername", ({ username }) => {
   showNotification("Opponent changed username to " + username);
@@ -295,16 +310,19 @@ socket.on("opponentMoved", (m) => {
 });
 
 //when someone wins
-socket.on("gameFinished", ({ message }) => {
-  alert(message);
-  resetGame();
+socket.on("opponentWon", ({ message }) => {
+  showModal("lose")
+  opponentIsReady=false
 });
-
 //when math is draw
 socket.on("matchDraw", ({ message }) => {
   alert(message);
   resetGame();
 });
+
+socket.on("opponentIsReady",()=>{
+  opponentIsReady=true
+})
 
 joinRoomBtn.addEventListener("click", () => {
   if (validateRoomCode(roomCodeInput.value)) {

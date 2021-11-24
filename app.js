@@ -52,15 +52,10 @@ io.on("connection", function (socket) {
       .emit("opponentMoved", { place: data.place });
   });
 
-  socket.on("x_wins", ({ roomCode }) => {
-    io.sockets
-      .in("room-" + roomCode)
-      .emit("gameFinished", { message: "X wins the game" });
-  });
-  socket.on("o_wins", ({ roomCode }) => {
-    io.sockets
-      .in("room-" + roomCode)
-      .emit("gameFinished", { message: "O wins the game" });
+  socket.on("playerWon", () => {
+    socket.to("room-"+socket.roomCode)
+      
+      .emit("opponentWon", {});
   });
 
   socket.on("draw", ({ roomCode }) => {
@@ -68,6 +63,8 @@ io.on("connection", function (socket) {
       .in("room-" + roomCode)
       .emit("matchDraw", { message: "Match Draw!!!" });
   });
+
+  socket.on("playerIsReady",()=>{socket.to("room-"+socket.roomCode).emit("opponentIsReady")})
   socket.on("playerUsername", ({ username }) => {
     socket.to("room-" + socket.roomCode).emit("opponentUsername", { username });
   });
