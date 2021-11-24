@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "sass": "sass public/styles/styles.scss public/styles/styles.css --watch",
-    "heroku":"git add . && git commit -m \"deploying to herokuu\" && heroku git:remote -a xo404  &&   git push heroku main"
+    "heroku":"git add . && git commit -m --msg && heroku git:remote -a xo404  &&   git push heroku main"
   },
   "author": "",
   "license": "ISC",
