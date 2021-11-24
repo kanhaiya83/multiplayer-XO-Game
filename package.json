@@ -4,13 +4,16 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start":"node app.js",
+    "start": "node app.js",
     "sass": "sass public/styles/styles.scss public/styles/styles.css --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "do-usernames": "^1.0.2",
     "express": "^4.17.1",
+    "gamer-namer": "^1.0.5",
+    "random-username-generator": "^1.0.4",
     "socket.io": "^4.4.0"
   }
 }

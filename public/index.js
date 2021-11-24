@@ -4,13 +4,29 @@ let yourTurn = false;
 const boardContainer = document.querySelector(".board-container");
 const leaveBtn = document.querySelector(".leave-room-btn");
 
-const inputContainer= document.querySelector(".input-container");
+const inputContainer = document.querySelector(".input-container");
 
 const createRoomBtn = document.querySelector(".create-room-btn");
 const joinRoomBtn = document.querySelector(".join-room-btn");
 const roomCodeInput = document.querySelector(".room-code-input");
+const inputWarning = document.querySelector(".input-warning");
 
-const roomNumberContainer=document.querySelector(".room-number")
+const roomNumberContainer = document.querySelector(".room-number");
+
+const playerUsername=document.querySelector(".player-details .username span")
+const playerIcon=document.querySelector(".player-details .user-icon img")
+
+const opponentUsername=document.querySelector(".opponent-details .username span")
+const opponentIcon=document.querySelector(".opponent-details .user-icon img")
+
+const changeBtn=document.querySelector(".change-username")
+const changeUsernameContainer=document.querySelector(".change-username-container")
+const changeUsernameInput=document.querySelector(".change-username-container input")
+const changeUsernameBtn=document.querySelector(".change-username-container button")
+
+
+const diceBearUrl="https://avatars.dicebear.com/api/bottts"
+
 
 const frames = document.querySelectorAll(".frame");
 const frame0 = frames[0];
@@ -23,11 +39,47 @@ const frame6 = frames[6];
 const frame7 = frames[7];
 const frame8 = frames[8];
 
+const generateUsername = () => {
+  const myGenerator = new Generator({
+    size: 15,
+  });
+
+  return myGenerator.getName();
+};
+
+updatePlayer=(username)=>{
+
+  playerUsername.innerHTML=username
+  playerIcon.setAttribute("src",`${diceBearUrl}/${username}.svg`)
+
+
+}
+
+updateOpponent=(username)=>{
+  opponentUsername.innerHTML=username
+  opponentIcon.setAttribute("src",`${diceBearUrl}/${username}.svg`)
+}
+
+updatePlayer(generateUsername())
+
+changeBtn.addEventListener("click",()=>{
+  changeBtn.classList.add("hide")
+  
+  changeUsernameContainer.classList.remove("d-none")
+})
+changeUsernameBtn.addEventListener("click",()=>{
+  updatePlayer(changeUsernameInput.value)
+  //hide input and button
+  changeUsernameContainer.classList.add("d-none")
+  //show change btn 
+  changeBtn.classList.remove("hide")
+})
+
 const showXorO = (frame, xOro) => {
   frame.children[0].children[xOro].classList.add("show");
   frame.classList.add(xOro);
 };
-
+//#region win/lose logic
 //check for combination in straight lines
 const straightLinesCheck = (xo) => {
   const temp =
@@ -88,6 +140,8 @@ const checkForDraw = () => {
     socket.emit("draw", { roomCode });
   }
 };
+//#endregion win/lose logic
+
 //leave the room
 const leaveRoom = () => {
   socket.emit("leaveRoom", { roomCode });
@@ -101,18 +155,27 @@ const leaveRoom = () => {
 };
 //reset everything
 const resetGame = () => {
- frames.forEach((frame)=>{
-  frame.children[0].children[0].classList.remove("show");
-  frame.children[0].children[1].classList.remove("show");
-  frame.classList.remove("0")
-  frame.classList.remove("1")
- })
+  frames.forEach((frame) => {
+    frame.children[0].children[0].classList.remove("show");
+    frame.children[0].children[1].classList.remove("show");
+    frame.classList.remove("0");
+    frame.classList.remove("1");
+  });
 
-  console.log({yourTurn})
-  if(X_O=="1"){
-    yourTurn=true
+  console.log({ yourTurn });
+  if (X_O == "1") {
+    yourTurn = true;
   }
+};
+//validateRoomCode
+const validateRoomCode = (code) => {
+  if (code.length != 4) {
+    inputWarning.classList.remove("hide");
+    return false;
+  }
+  inputWarning.classList.add("hide");
 
+  return true;
 };
 //adding event listeners
 frames.forEach((f) => {
@@ -142,7 +205,7 @@ socket.on("joinedRoom", (m) => {
   //show the gameboard
   boardContainer.classList.remove("d-none");
   //display the room code
-  roomNumberContainer.innerHTML="Room:"+m.roomCode
+  roomNumberContainer.innerHTML = "Room:" + m.roomCode;
   //initialize roomcode and xORo
   roomCode = m.roomCode;
   X_O = m.X_O;
@@ -165,24 +228,29 @@ socket.on("opponentMoved", (m) => {
 //when someone wins
 socket.on("gameFinished", ({ message }) => {
   alert(message);
-  resetGame()
+  resetGame();
 });
 
 //when math is draw
 socket.on("matchDraw", ({ message }) => {
   alert(message);
-  resetGame()
+  resetGame();
 });
 
 joinRoomBtn.addEventListener("click", () => {
-  socket.emit("joinRoom", {
-    roomCode: roomCodeInput.value,
-  });
+  if (validateRoomCode(roomCodeInput.value)) {
+    //emit the joinroom request to the given room code
+    socket.emit("joinRoom", {
+      roomCode: roomCodeInput.value,
+    });
+    //empty the input
+    roomCodeInput.value = "";
+  }
 });
 
-createRoomBtn.addEventListener("click",()=>{
-  const randomRoomNumber=Math.floor(Math.random() * 9000) +  1000
+createRoomBtn.addEventListener("click", () => {
+  const randomRoomNumber = Math.floor(Math.random() * 9000) + 1000;
   socket.emit("joinRoom", {
     roomCode: randomRoomNumber,
   });
-})
+});

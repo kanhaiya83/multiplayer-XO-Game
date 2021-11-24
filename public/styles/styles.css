@@ -1,20 +1,105 @@
 @import url("https://fonts.googleapis.com/css2?family=Comforter+Brush&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 5% 0;
+  width: 100%;
+}
+.header .user-details {
+  height: fit-content;
+  width: 11rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid lightgray;
+  padding: 5px 15px;
+  border-radius: 20px;
+  position: relative;
+}
+.header .user-details .whoAreYou {
+  position: absolute;
+  bottom: calc(100% + 3px );
+  left: 10px;
+  color: #c9c9c9;
+  font-size: 0.7rem;
+}
+.header .user-details .user-icon {
+  height: fit-content;
+  background-color: #fff;
+  border-radius: 100px;
+}
+.header .user-details .user-icon img {
+  width: 3rem;
+  height: 3rem;
+}
+.header .user-details .username {
+  font-size: 0.7rem;
+  font-family: "roboto";
+  font-weight: 700;
+  color: #8f8f8f;
+  margin-left: 20px;
+  position: relative;
+}
+.header .user-details .username .change-username {
+  position: absolute;
+  top: 100%;
+  right: -10px;
+  color: #c0c0c0;
+  cursor: pointer;
+}
+.header .user-details .player-xo {
+  display: none;
+}
+.header .user-details .player-xo img {
+  width: 3rem;
+}
+.header .change-username-container {
+  position: absolute;
+  top: calc(100% + 15px);
+  width: 100%;
+}
+.header .change-username-container input {
+  border: 1px solid #cdcdcd;
+  border-radius: 5px;
+  padding: 3px 5px;
+  font-size: 0.8rem;
+  margin-bottom: 10px;
+}
+.header .change-username-container input:focus {
+  outline: none;
+}
+.header .change-username-container button {
+  background-color: #6200EE;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border: none;
+  border-radius: 5rem;
+  font-family: "roboto";
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.header .change-username-container button:focus {
+  outline: none;
+}
+.header .heading {
+  height: fit-content;
+  text-align: center;
+  color: #5f5f5f;
+  font-family: "Comforter Brush";
+}
+
 .container {
   max-width: 600px;
   text-align: center;
   margin: 0 auto;
-  font-family: "Comforter Brush";
-}
-.container .heading {
-  text-align: center;
-  padding: 2rem 0;
-  color: #5f5f5f;
 }
 .container .button-primary {
   background-color: transparent;
@@ -42,8 +127,21 @@
   align-items: center;
   margin-top: 2rem;
 }
+.container .input-container .join-room .input-warning {
+  transition: opacity 200ms;
+}
+.container .input-container .join-room .input-warning span {
+  font-size: 0.7rem;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #ff4b4b;
+}
+.container .input-container .join-room .input-warning.hide {
+  transition: opacity 1ms;
+  opacity: 0;
+}
 .container .input-container .join-room .join-room-btn {
   width: 8rem;
+  margin-top: 0;
 }
 .container .input-container .join-room .room-code-input {
   padding: 10px 5px;
@@ -76,13 +174,20 @@
 .container .board-container .svg-container .circle.show {
   opacity: 1;
 }
+.container .board-container .svg-container .frame {
+  cursor: pointer;
+}
 .container .board-container .leave-room-btn {
   text-align: center;
   margin-top: 10px;
 }
 
 .d-none {
-  display: none;
+  display: none !important;
+}
+
+.hide {
+  opacity: 0 !important;
 }
 
 /*# sourceMappingURL=styles.css.map */
