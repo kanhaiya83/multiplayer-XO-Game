@@ -6,6 +6,22 @@
   box-sizing: border-box;
 }
 
+.loader-bg {
+  z-index: 10000;
+  background-color: rgba(0, 0, 0, 0.599);
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.loader-bg img {
+  width: 4rem;
+}
+
 .header {
   display: flex;
   justify-content: space-between;

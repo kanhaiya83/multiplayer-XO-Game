@@ -27,6 +27,7 @@ const changeUsernameContainer=document.querySelector(".change-username-container
 const changeUsernameInput=document.querySelector(".change-username-container input")
 const changeUsernameBtn=document.querySelector(".change-username-container button")
 
+const loaderBg=document.querySelector(".loader-bg")
 
 const diceBearUrl="https://avatars.dicebear.com/api/bottts"
 
@@ -41,6 +42,15 @@ const frame5 = frames[5];
 const frame6 = frames[6];
 const frame7 = frames[7];
 const frame8 = frames[8];
+
+const showLoader=(show)=>{
+  if(show){
+    loaderBg.classList.remove("d-none")
+  }
+  else{
+    loaderBg.classList.add("d-none")
+  }
+}
 
 const generateUsername = () => {
   const myGenerator = new Generator({
@@ -217,6 +227,9 @@ socket.on("joinedRoom", (m) => {
   if (X_O == "1") {
     yourTurn = true;
   }
+
+  //hide loader
+  showLoader(false)
 });
 
 //when another player joins your room
@@ -248,6 +261,8 @@ socket.on("matchDraw", ({ message }) => {
 
 joinRoomBtn.addEventListener("click", () => {
   if (validateRoomCode(roomCodeInput.value)) {
+    //start showing loader
+    showLoader(true)
     //emit the joinroom request to the given room code
     socket.emit("joinRoom", {
       roomCode: roomCodeInput.value,
