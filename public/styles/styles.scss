@@ -71,6 +71,14 @@ width: 4rem;
         color: rgb(201, 201, 201);
         font-size: 0.7rem;
     }
+    .change-username{
+      position: absolute;
+      bottom: calc(100% + 1px);
+      right: 20px;
+      color:#c0c0c0 ;
+      cursor: pointer;
+      font-size: 0.85rem;
+  }
     .user-icon {
       height: fit-content;
       
@@ -88,13 +96,7 @@ width: 4rem;
       color: #8f8f8f;
       margin-left: 20px;
       position: relative;
-      .change-username{
-          position: absolute;
-          top: 100%;
-          right: -10px;
-          color:#c0c0c0 ;
-          cursor: pointer;
-      }
+      
     }
     .player-xo {
         display: none;

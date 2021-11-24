@@ -199,8 +199,6 @@ const resetGame = () => {
     frame.classList.remove("0");
     frame.classList.remove("1");
   });
-
-  console.log({ yourTurn });
   if (X_O == "1") {
     yourTurn = true;
   }
@@ -267,8 +265,8 @@ socket.on("roomFull", () => {
 });
 //when another player joins your room
 socket.on("opponentJoined", ({ message, opponentUsername }) => {
-  console.log(message);
 
+  resetGame()
   updateOpponent(opponentUsername);
   showNotification(opponentUsername + " has joined the game!!");
   socket.emit("playerUsername", {

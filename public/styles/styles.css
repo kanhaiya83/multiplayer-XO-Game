@@ -70,6 +70,14 @@
   color: #c9c9c9;
   font-size: 0.7rem;
 }
+.header .user-details .change-username {
+  position: absolute;
+  bottom: calc(100% + 1px);
+  right: 20px;
+  color: #c0c0c0;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
 .header .user-details .user-icon {
   height: fit-content;
   background-color: #fff;
@@ -86,13 +94,6 @@
   color: #8f8f8f;
   margin-left: 20px;
   position: relative;
-}
-.header .user-details .username .change-username {
-  position: absolute;
-  top: 100%;
-  right: -10px;
-  color: #c0c0c0;
-  cursor: pointer;
 }
 .header .user-details .player-xo {
   display: none;

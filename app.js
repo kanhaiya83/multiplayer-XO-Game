@@ -10,7 +10,6 @@ const port = process.env.PORT || 3001;
 app.get("/", (req, res) => {
   res.sendFile("index.js");
 });
-const X_O_object = {};
 
 const getRoomClientsNumber = (roomCode) => {
   if (io.sockets.adapter.rooms.get("room-" + roomCode)) {
@@ -82,6 +81,7 @@ io.on("connection", function (socket) {
     socket.leave("room-" + roomCode);
     socket.emit("leftRoom");
     socket.to("room-" + roomCode).emit("opponentLeft");
+    socket.roomCode=undefined
   });
 
   //Whenever someone disconnects this piece of code executed
