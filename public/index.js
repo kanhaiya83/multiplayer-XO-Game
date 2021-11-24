@@ -16,6 +16,9 @@ const roomNumberContainer = document.querySelector(".room-number");
 const playerUsername=document.querySelector(".player-details .username span")
 const playerIcon=document.querySelector(".player-details .user-icon img")
 
+
+
+const opponentDetailsContainer=document.querySelector(".opponent-details")
 const opponentUsername=document.querySelector(".opponent-details .username span")
 const opponentIcon=document.querySelector(".opponent-details .user-icon img")
 
@@ -197,7 +200,7 @@ frames.forEach((f) => {
 leaveBtn.addEventListener("click", () => {
   leaveRoom();
   resetGame();
-});
+  opponentDetailsContainer.classList.add("hide")});
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
   //hide the room input
@@ -206,6 +209,8 @@ socket.on("joinedRoom", (m) => {
   boardContainer.classList.remove("d-none");
   //display the room code
   roomNumberContainer.innerHTML = "Room:" + m.roomCode;
+  //show opponent
+  opponentDetailsContainer.classList.remove("hide")
   //initialize roomcode and xORo
   roomCode = m.roomCode;
   X_O = m.X_O;
@@ -215,10 +220,14 @@ socket.on("joinedRoom", (m) => {
 });
 
 //when another player joins your room
-socket.on("newPlayerJoinedRoom", (m) => {
-  console.log(m);
+socket.on("opponentJoined", ({message,opponentUsername}) => {
+  console.log(message)
+  updateOpponent(opponentUsername)
+  socket.emit("firstPlayerUsername",{username:playerUsername.textContent,roomCode:roomCode})
 });
-
+socket.on("opponentUsername",({username})=>{
+  updateOpponent(username)
+})
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
   showXorO(frames[m.place - 1], X_O == 1 ? 0 : 1);
@@ -242,6 +251,7 @@ joinRoomBtn.addEventListener("click", () => {
     //emit the joinroom request to the given room code
     socket.emit("joinRoom", {
       roomCode: roomCodeInput.value,
+      username:playerUsername.textContent
     });
     //empty the input
     roomCodeInput.value = "";

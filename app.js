@@ -1,6 +1,8 @@
 const express = require("express");
 const app = express();
 
+
+
 app.use(express.static("public"));
 var http = require("http").Server(app);
 
@@ -34,7 +36,7 @@ io.on("connection", function (socket) {
 
         socket.join("room-"+roomCode);
 
-        socket.to("room-"+roomCode).emit('newPlayerJoinedRoom', "new player joined in room no. "+roomCode);
+        socket.to("room-"+roomCode).emit('opponentJoined', {message:"new player joined in room no. "+roomCode,opponentUsername:data.username});
 
 
         socket.emit("joinedRoom",{message:"You have joined the room "+roomCode,X_O:X_O_object[roomCode],roomCode:roomCode})
@@ -59,6 +61,9 @@ io.on("connection", function (socket) {
 
     socket.on("draw",({roomCode})=>{
         io.sockets.in("room-"+roomCode).emit("matchDraw",{message:"Match Draw!!!"})
+    })
+    socket.on("firstPlayerUsername",({username,roomCode})=>{
+        socket.to("room-"+roomCode).emit("opponentUsername",{username});
     })
 
     socket.on("leaveRoom",({roomCode})=>{
