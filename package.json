@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node app.js",
-    "sass": "sass public/styles/styles.scss public/styles/styles.css --watch"
+    "sass": "sass public/styles/styles.scss public/styles/styles.css --watch",
+    "heroku":"heroku git:remote -a xo404  &&   git push heroku master"
   },
   "author": "",
   "license": "ISC",

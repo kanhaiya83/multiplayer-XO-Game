@@ -105,6 +105,8 @@ changeUsernameBtn.addEventListener("click", () => {
   changeUsernameContainer.classList.add("d-none");
   //show change btn
   changeBtn.classList.remove("hide");
+  //emit the username so that it can reflect on the opponent side
+  socket.emit("changedPlayerUsername",{username:changeUsernameInput.value})
 
   showNotification("Username changed!!!", 1000);
 });
@@ -269,7 +271,7 @@ socket.on("opponentJoined", ({ message, opponentUsername }) => {
 
   updateOpponent(opponentUsername);
   showNotification(opponentUsername + " has joined the game!!");
-  socket.emit("firstPlayerUsername", {
+  socket.emit("playerUsername", {
     username: playerUsername.textContent,
     roomCode: roomCode,
   });
@@ -282,6 +284,10 @@ socket.on("opponentLeft", () => {
 });
 socket.on("opponentUsername", ({ username }) => {
   showNotification("You are playing against " + username);
+  updateOpponent(username);
+});
+socket.on("changedOpponentUsername", ({ username }) => {
+  showNotification("Opponent changed username to " + username);
   updateOpponent(username);
 });
 //when opponent make a move
@@ -318,6 +324,7 @@ joinRoomBtn.addEventListener("click", () => {
 
 createRoomBtn.addEventListener("click", () => {
   const randomRoomNumber = Math.floor(Math.random() * 9000) + 1000;
+  showLoader(true)
   socket.emit("joinRoom", {
     roomCode: randomRoomNumber,
   });

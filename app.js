@@ -20,22 +20,21 @@ const getRoomClientsNumber = (roomCode) => {
 };
 //Whenever someone connects this gets executed
 io.on("connection", function (socket) {
-  socket.on("joinRoom", ({roomCode,username}) => {
+  socket.on("joinRoom", ({ roomCode, username }) => {
     let userX_O;
 
-    if (getRoomClientsNumber(roomCode)==0) {
-       userX_O=0;
+    if (getRoomClientsNumber(roomCode) == 0) {
+      userX_O = 0;
     } else {
-       userX_O=1;
-
+      userX_O = 1;
     }
 
     if (getRoomClientsNumber(roomCode) < 2) {
       socket.join("room-" + roomCode);
-      socket.roomCode=roomCode
+      socket.roomCode = roomCode;
       socket.to("room-" + roomCode).emit("opponentJoined", {
         message: "new player joined in room no. " + roomCode,
-        opponentUsername:username,
+        opponentUsername: username,
       });
 
       socket.emit("joinedRoom", {
@@ -43,9 +42,8 @@ io.on("connection", function (socket) {
         X_O: userX_O,
         roomCode: roomCode,
       });
-    }
-    else{
-        socket.emit("roomFull",{roomCode})
+    } else {
+      socket.emit("roomFull", { roomCode });
     }
   });
 
@@ -71,22 +69,25 @@ io.on("connection", function (socket) {
       .in("room-" + roomCode)
       .emit("matchDraw", { message: "Match Draw!!!" });
   });
-  socket.on("firstPlayerUsername", ({ username, roomCode }) => {
-    socket.to("room-" + roomCode).emit("opponentUsername", { username });
+  socket.on("playerUsername", ({ username }) => {
+    socket.to("room-" + socket.roomCode).emit("opponentUsername", { username });
+  });
+  socket.on("changedPlayerUsername", ({ username }) => {
+    socket
+      .to("room-" + socket.roomCode)
+      .emit("changedOpponentUsername", { username });
   });
 
   socket.on("leaveRoom", ({ roomCode }) => {
     socket.leave("room-" + roomCode);
     socket.emit("leftRoom");
-    socket.to("room-" + roomCode).emit("opponentLeft")
-    
+    socket.to("room-" + roomCode).emit("opponentLeft");
   });
 
   //Whenever someone disconnects this piece of code executed
   socket.on("disconnect", function () {
     console.log("A user disconnected");
-    socket.to("room-" + socket.roomCode).emit("opponentLeft")
-    
+    socket.to("room-" + socket.roomCode).emit("opponentLeft");
   });
 });
 http.listen(port, function () {
