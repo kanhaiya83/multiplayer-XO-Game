@@ -185,6 +185,8 @@ const leaveRoom = () => {
     boardContainer.classList.add("d-none");
     //show input
     inputContainer.classList.remove("d-none");
+    //remove loader
+    showLoader(false)
   });
 };
 //reset everything
@@ -233,7 +235,7 @@ leaveBtn.addEventListener("click", () => {
   leaveRoom();
   resetGame();
   opponentDetailsContainer.classList.add("hide");
-  showLoader(false);
+  
 });
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
