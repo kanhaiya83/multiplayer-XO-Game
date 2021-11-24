@@ -13,24 +13,31 @@ const inputWarning = document.querySelector(".input-warning");
 
 const roomNumberContainer = document.querySelector(".room-number");
 
-const playerUsername=document.querySelector(".player-details .username span")
-const playerIcon=document.querySelector(".player-details .user-icon img")
+const playerUsername = document.querySelector(".player-details .username span");
+const playerIcon = document.querySelector(".player-details .user-icon img");
 
+const opponentDetailsContainer = document.querySelector(".opponent-details");
+const opponentUsername = document.querySelector(
+  ".opponent-details .username span"
+);
+const opponentIcon = document.querySelector(".opponent-details .user-icon img");
 
+const changeBtn = document.querySelector(".change-username");
+const changeUsernameContainer = document.querySelector(
+  ".change-username-container"
+);
+const changeUsernameInput = document.querySelector(
+  ".change-username-container input"
+);
+const changeUsernameBtn = document.querySelector(
+  ".change-username-container button"
+);
 
-const opponentDetailsContainer=document.querySelector(".opponent-details")
-const opponentUsername=document.querySelector(".opponent-details .username span")
-const opponentIcon=document.querySelector(".opponent-details .user-icon img")
+const loaderBg = document.querySelector(".loader-bg");
 
-const changeBtn=document.querySelector(".change-username")
-const changeUsernameContainer=document.querySelector(".change-username-container")
-const changeUsernameInput=document.querySelector(".change-username-container input")
-const changeUsernameBtn=document.querySelector(".change-username-container button")
+const notificationContainer = document.querySelector(".notification-container");
 
-const loaderBg=document.querySelector(".loader-bg")
-
-const diceBearUrl="https://avatars.dicebear.com/api/bottts"
-
+const diceBearUrl = "https://avatars.dicebear.com/api/bottts";
 
 const frames = document.querySelectorAll(".frame");
 const frame0 = frames[0];
@@ -43,14 +50,21 @@ const frame6 = frames[6];
 const frame7 = frames[7];
 const frame8 = frames[8];
 
-const showLoader=(show)=>{
-  if(show){
-    loaderBg.classList.remove("d-none")
+const showLoader = (show) => {
+  if (show) {
+    loaderBg.classList.remove("d-none");
+  } else {
+    loaderBg.classList.add("d-none");
   }
-  else{
-    loaderBg.classList.add("d-none")
-  }
-}
+};
+
+const showNotification = (message, time = 2000) => {
+  document.querySelector(".notification").textContent = message;
+  notificationContainer.classList.add("show-notification");
+  setTimeout(() => {
+    notificationContainer.classList.remove("show-notification");
+  }, time);
+};
 
 const generateUsername = () => {
   const myGenerator = new Generator({
@@ -60,33 +74,40 @@ const generateUsername = () => {
   return myGenerator.getName();
 };
 
-updatePlayer=(username)=>{
+updatePlayer = (username) => {
+  playerUsername.innerHTML = username;
+  playerIcon.setAttribute("src", `${diceBearUrl}/${username}.svg`);
+};
 
-  playerUsername.innerHTML=username
-  playerIcon.setAttribute("src",`${diceBearUrl}/${username}.svg`)
-
-
-}
-
-updateOpponent=(username)=>{
-  opponentUsername.innerHTML=username
-  opponentIcon.setAttribute("src",`${diceBearUrl}/${username}.svg`)
-}
-
-updatePlayer(generateUsername())
-
-changeBtn.addEventListener("click",()=>{
-  changeBtn.classList.add("hide")
+updateOpponent = (username) => {
   
-  changeUsernameContainer.classList.remove("d-none")
-})
-changeUsernameBtn.addEventListener("click",()=>{
-  updatePlayer(changeUsernameInput.value)
+  opponentUsername.innerHTML = username;
+  if ((username == "No opponent")) {
+
+    opponentIcon.setAttribute("src", "./images/default-avatar.svg");
+  }
+  else{
+    
+    opponentIcon.setAttribute("src", `${diceBearUrl}/${username}.svg`);
+  }
+};
+
+updatePlayer(generateUsername());
+
+changeBtn.addEventListener("click", () => {
+  changeBtn.classList.add("hide");
+
+  changeUsernameContainer.classList.remove("d-none");
+});
+changeUsernameBtn.addEventListener("click", () => {
+  updatePlayer(changeUsernameInput.value);
   //hide input and button
-  changeUsernameContainer.classList.add("d-none")
-  //show change btn 
-  changeBtn.classList.remove("hide")
-})
+  changeUsernameContainer.classList.add("d-none");
+  //show change btn
+  changeBtn.classList.remove("hide");
+
+  showNotification("Username changed!!!", 1000);
+});
 
 const showXorO = (frame, xOro) => {
   frame.children[0].children[xOro].classList.add("show");
@@ -208,11 +229,15 @@ frames.forEach((f) => {
 });
 //leave button event listener
 leaveBtn.addEventListener("click", () => {
+  showLoader(true);
   leaveRoom();
   resetGame();
-  opponentDetailsContainer.classList.add("hide")});
+  opponentDetailsContainer.classList.add("hide");
+  showLoader(false);
+});
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
+  socket.roomCode = m.roomCode;
   //hide the room input
   inputContainer.classList.add("d-none");
   //show the gameboard
@@ -220,7 +245,7 @@ socket.on("joinedRoom", (m) => {
   //display the room code
   roomNumberContainer.innerHTML = "Room:" + m.roomCode;
   //show opponent
-  opponentDetailsContainer.classList.remove("hide")
+  opponentDetailsContainer.classList.remove("hide");
   //initialize roomcode and xORo
   roomCode = m.roomCode;
   X_O = m.X_O;
@@ -229,18 +254,34 @@ socket.on("joinedRoom", (m) => {
   }
 
   //hide loader
-  showLoader(false)
+  showLoader(false);
 });
-
+//when the room is full
+socket.on("roomFull", () => {
+  showLoader(false);
+  showNotification("The room is full!!");
+});
 //when another player joins your room
-socket.on("opponentJoined", ({message,opponentUsername}) => {
-  console.log(message)
-  updateOpponent(opponentUsername)
-  socket.emit("firstPlayerUsername",{username:playerUsername.textContent,roomCode:roomCode})
+socket.on("opponentJoined", ({ message, opponentUsername }) => {
+  console.log(message);
+
+  updateOpponent(opponentUsername);
+  showNotification(opponentUsername + " has joined the game!!");
+  socket.emit("firstPlayerUsername", {
+    username: playerUsername.textContent,
+    roomCode: roomCode,
+  });
 });
-socket.on("opponentUsername",({username})=>{
-  updateOpponent(username)
-})
+socket.on("opponentLeft", () => {
+  showNotification("Opponent left!");
+  updateOpponent("No opponent");
+  resetGame()
+  X_O=0;
+});
+socket.on("opponentUsername", ({ username }) => {
+  showNotification("You are playing against " + username);
+  updateOpponent(username);
+});
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
   showXorO(frames[m.place - 1], X_O == 1 ? 0 : 1);
@@ -262,11 +303,11 @@ socket.on("matchDraw", ({ message }) => {
 joinRoomBtn.addEventListener("click", () => {
   if (validateRoomCode(roomCodeInput.value)) {
     //start showing loader
-    showLoader(true)
+    showLoader(true);
     //emit the joinroom request to the given room code
     socket.emit("joinRoom", {
       roomCode: roomCodeInput.value,
-      username:playerUsername.textContent
+      username: playerUsername.textContent,
     });
     //empty the input
     roomCodeInput.value = "";
