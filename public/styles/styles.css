@@ -80,10 +80,11 @@
 }
 .header .user-details .user-icon {
   height: fit-content;
+  margin-right: 20px;
   background-color: #fff;
   border-radius: 100px;
 }
-.header .user-details .user-icon img {
+.header .user-details .user-icon svg, .header .user-details .user-icon img {
   width: 3rem;
   height: 3rem;
 }
@@ -92,7 +93,6 @@
   font-family: "roboto";
   font-weight: 700;
   color: #8f8f8f;
-  margin-left: 20px;
   position: relative;
 }
 .header .user-details .player-xo {

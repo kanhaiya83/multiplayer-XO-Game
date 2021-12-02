@@ -1,14 +1,40 @@
 const express = require("express");
+const Generator = require("do-usernames");
 const app = express();
 
+//for avataars
+const  { createAvatar } = require('@dicebear/avatars');
+const avatarStyle = require('@dicebear/big-smile');
+// set the view engine to ejs
+app.set('view engine', 'ejs');
+
+
+
 app.use(express.static("public"));
+
 var http = require("http").Server(app);
 
 var io = require("socket.io")(http);
 const port = process.env.PORT || 3001;
 
+
+const generateAvatarSvg=(seed)=>{
+  return createAvatar(avatarStyle, {
+    seed: seed.trim()
+  });
+}
 app.get("/", (req, res) => {
-  res.sendFile("index.js");
+  const myGenerator = new Generator({
+    size: 15,
+  });
+  let username=myGenerator.getName()
+
+
+  let userProfileSvg = generateAvatarSvg(username)
+
+
+  
+  res.render("index",{username,userProfileSvg})
 });
 
 const getRoomClientsNumber = (roomCode) => {
@@ -34,6 +60,8 @@ io.on("connection", function (socket) {
       socket.to("room-" + roomCode).emit("opponentJoined", {
         message: "new player joined in room no. " + roomCode,
         opponentUsername: username,
+        opponentAvatarSvg:generateAvatarSvg(username)
+
       });
 
       socket.emit("joinedRoom", {
@@ -66,12 +94,12 @@ io.on("connection", function (socket) {
 
   socket.on("playerIsReady",()=>{socket.to("room-"+socket.roomCode).emit("opponentIsReady")})
   socket.on("playerUsername", ({ username }) => {
-    socket.to("room-" + socket.roomCode).emit("opponentUsername", { username });
+    socket.to("room-" + socket.roomCode).emit("opponentUsername", { username:username,opponentAvatarSvg:generateAvatarSvg(username) });
   });
   socket.on("changedPlayerUsername", ({ username }) => {
     socket
       .to("room-" + socket.roomCode)
-      .emit("changedOpponentUsername", { username });
+      .emit("changedOpponentUsername", { username ,opponentAvatarSvg: generateAvatarSvg(username)});
   });
 
   socket.on("leaveRoom", ({ roomCode }) => {

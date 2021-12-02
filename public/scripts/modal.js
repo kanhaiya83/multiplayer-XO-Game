@@ -14,7 +14,7 @@ const showModal = (status) => {
     modalContainer.classList.add("show-modal");
   } else {
     modalTitle.textContent = "Match draw!!!";
-    modalTitle.textContent =
+    modalDescription.textContent =
       "When an unstoppable force meets an immovable object!";
     modalContainer.classList.add("show-modal");
   }
