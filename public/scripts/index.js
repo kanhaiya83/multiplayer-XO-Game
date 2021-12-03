@@ -1,11 +1,42 @@
+const playWithFriendBtn = document.querySelector("button.play-with-friend");
+const playOfflineBtn = document.querySelector("button.play-offline");
+const playWithBotBtn = document.querySelector("button.play-with-bot");
+const popupBackdrop = document.querySelector(".popup-bg");
+const popupContainer = document.querySelector(".popup-container");
+const popupCloseBtn = document.querySelector(".popup-close-btn");
+
+const showPopup = (show = true) => {
+  if (show) {
+    popupBackdrop.classList.add("show");
+    popupContainer.classList.add("show");
+  } else {
+    popupBackdrop.classList.remove("show");
+    popupContainer.classList.remove("show");
+  }
+};
+popupCloseBtn.addEventListener("click",()=>{
+  showPopup(false)
+})
+playWithFriendBtn.addEventListener("click", () => {
+  showPopup(true);
+});
+
+playOfflineBtn.addEventListener("click", () => {
+  console.log("object");
+});
+
+playWithBotBtn.addEventListener("click", () => {
+  console.log("object");
+});
+
 let roomCode = null;
 let X_O = null;
 let yourTurn = false;
-let opponentIsReady=false;
+let opponentIsReady = false;
 const boardContainer = document.querySelector(".board-container");
 const leaveBtn = document.querySelector(".leave-room-btn");
 
-const inputContainer = document.querySelector(".input-container");
+const buttonsWrapper = document.querySelector(".buttons-wrapper");
 
 const createRoomBtn = document.querySelector(".create-room-btn");
 const joinRoomBtn = document.querySelector(".join-room-btn");
@@ -38,7 +69,6 @@ const loaderBg = document.querySelector(".loader-bg");
 
 const notificationContainer = document.querySelector(".notification-container");
 
-
 const frames = document.querySelectorAll(".frame");
 const frame0 = frames[0];
 const frame1 = frames[1];
@@ -66,44 +96,42 @@ const showNotification = (message, time = 2000) => {
   }, time);
 };
 
-updatePlayer = (username ,svg) => {
+updatePlayer = (username, svg) => {
   playerUsername.innerHTML = username;
-  playerIcon.innerHTML=svg
+  playerIcon.innerHTML = svg;
 };
 
-updateOpponent = (username,svg) => {
-  
+updateOpponent = (username, svg) => {
   opponentUsername.innerHTML = username;
-  
-    opponentIcon.innerHTML=svg
-    
-  
+
+  opponentIcon.innerHTML = svg;
 };
 
-const fetchAvatar=async (seed)=>{
-  
-   const data=await fetch("https://avatars.dicebear.com/api/big-smile/"+seed.trim()+".svg")
-   let svg=await data.text()
-   return svg
-}
+const fetchAvatar = async (seed) => {
+  const data = await fetch(
+    "https://avatars.dicebear.com/api/big-smile/" + seed.trim() + ".svg"
+  );
+  let svg = await data.text();
+  return svg;
+};
 
 changeBtn.addEventListener("click", () => {
   changeBtn.classList.add("hide");
 
   changeUsernameContainer.classList.remove("d-none");
 });
-changeUsernameBtn.addEventListener("click", async() => {
-  showLoader(true)
+changeUsernameBtn.addEventListener("click", async () => {
+  showLoader(true);
 
-  let avatarSvg=await fetchAvatar(changeUsernameInput.value)
-  updatePlayer(changeUsernameInput.value,avatarSvg);
+  let avatarSvg = await fetchAvatar(changeUsernameInput.value);
+  updatePlayer(changeUsernameInput.value, avatarSvg);
   //hide input and button
   changeUsernameContainer.classList.add("d-none");
   //show change btn
   changeBtn.classList.remove("hide");
   //emit the username so that it can reflect on the opponent side
-  socket.emit("changedPlayerUsername",{username:changeUsernameInput.value})
-showLoader(false)
+  socket.emit("changedPlayerUsername", { username: changeUsernameInput.value });
+  showLoader(false);
   showNotification("Username changed!!!", 1000);
 });
 
@@ -152,19 +180,18 @@ const DiagonalLinesCheck = (xo) => {
 //check both straight and diagonal combination for both X and O
 const checkForWin = () => {
   if (straightLinesCheck("0") || DiagonalLinesCheck("0")) {
-    console.log({X_O})
-    if(X_O=="0"){
-      socket.emit("playerWon")
-      showModal("win")
-      opponentIsReady=false
-
+    console.log({ X_O });
+    if (X_O == "0") {
+      socket.emit("playerWon");
+      showModal("win");
+      opponentIsReady = false;
     }
   } else if (straightLinesCheck("1") || DiagonalLinesCheck("1")) {
-    console.log({X_O})
-    if(X_O=="1"){
-      socket.emit("playerWon")
-      showModal("win")
-      opponentIsReady=false
+    console.log({ X_O });
+    if (X_O == "1") {
+      socket.emit("playerWon");
+      showModal("win");
+      opponentIsReady = false;
     }
   } else {
     checkForDraw();
@@ -193,16 +220,16 @@ const leaveRoom = () => {
     //hide board
     boardContainer.classList.add("d-none");
     //show input
-    inputContainer.classList.remove("d-none");
+    buttonsWrapper.classList.remove("d-none");
     //remove loader
-    showLoader(false)
+    showLoader(false);
   });
 };
 //show on screen that it is player's turn to play
-const showYourTurn=()=>{
-  console.log("Your turn!!")
-}
-//reset game board,remove all moves  
+const showYourTurn = () => {
+  console.log("Your turn!!");
+};
+//reset game board,remove all moves
 const resetGame = () => {
   frames.forEach((frame) => {
     frame.children[0].children[0].classList.remove("show");
@@ -211,27 +238,32 @@ const resetGame = () => {
     frame.classList.remove("1");
   });
   //make both players turn to false
-  yourTurn=false;
-//then randomly choose which one get to move first
+  yourTurn = false;
+  //then randomly choose which one get to move first
   if (X_O == 1) {
     yourTurn = true;
-    showYourTurn()
+    showYourTurn();
   }
 };
 //validateRoomCode
 const validateRoomCode = (code) => {
   if (code.length != 4) {
-    inputWarning.classList.remove("hide");
+    inputWarning.classList.remove("d-none");
     return false;
   }
-  inputWarning.classList.add("hide");
+  inputWarning.classList.add("d-none");
 
   return true;
 };
 //adding event listeners
 frames.forEach((f) => {
   f.addEventListener("click", () => {
-    if (!f.classList.contains(0) && !f.classList.contains(1) && yourTurn && opponentIsReady ) {
+    if (
+      !f.classList.contains(0) &&
+      !f.classList.contains(1) &&
+      yourTurn &&
+      opponentIsReady
+    ) {
       //emit to server that player has moved
       socket.emit("playerMoved", {
         place: f.dataset.serial,
@@ -250,13 +282,12 @@ leaveBtn.addEventListener("click", () => {
   leaveRoom();
   resetGame();
   opponentDetailsContainer.classList.add("hide");
-  
 });
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
   socket.roomCode = m.roomCode;
   //hide the room input
-  inputContainer.classList.add("d-none");
+  buttonsWrapper.classList.add("d-none");
   //show the gameboard
   boardContainer.classList.remove("d-none");
   //display the room code
@@ -268,7 +299,7 @@ socket.on("joinedRoom", (m) => {
   X_O = m.X_O;
   if (X_O == "1") {
     yourTurn = true;
-    showYourTurn()
+    showYourTurn();
   }
 
   //hide loader
@@ -280,57 +311,60 @@ socket.on("roomFull", () => {
   showNotification("The room is full!!");
 });
 //when another player joins your room
-socket.on("opponentJoined", ({ message, opponentUsername ,opponentAvatarSvg}) => {
-
-  resetGame()
-  updateOpponent(opponentUsername,opponentAvatarSvg);
-  showNotification(opponentUsername + " has joined the game!!");
-  socket.emit("playerUsername", {
-    username: playerUsername.textContent,
-    roomCode: roomCode,
-  });
-  opponentIsReady=true
-
-});
+socket.on(
+  "opponentJoined",
+  ({ message, opponentUsername, opponentAvatarSvg }) => {
+    resetGame();
+    updateOpponent(opponentUsername, opponentAvatarSvg);
+    showNotification(opponentUsername + " has joined the game!!");
+    socket.emit("playerUsername", {
+      username: playerUsername.textContent,
+      roomCode: roomCode,
+    });
+    opponentIsReady = true;
+  }
+);
 socket.on("opponentLeft", () => {
   showNotification("Opponent left!");
-  updateOpponent("No opponent","");
-  resetGame()
-  X_O=0;
+  updateOpponent("No opponent", "");
+  resetGame();
+  X_O = 0;
 });
-socket.on("opponentUsername", ({ username ,opponentAvatarSvg}) => {
+socket.on("opponentUsername", ({ username, opponentAvatarSvg }) => {
   showNotification("You are playing against " + username);
-  updateOpponent(username ,opponentAvatarSvg);
-  opponentIsReady=true
+  updateOpponent(username, opponentAvatarSvg);
+  opponentIsReady = true;
 });
-socket.on("changedOpponentUsername", ({ username ,opponentAvatarSvg}) => {
+socket.on("changedOpponentUsername", ({ username, opponentAvatarSvg }) => {
   showNotification("Opponent changed username to " + username);
-  updateOpponent(username,opponentAvatarSvg);
+  updateOpponent(username, opponentAvatarSvg);
 });
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
   showXorO(frames[m.place - 1], X_O == 1 ? 0 : 1);
   yourTurn = true;
-  showYourTurn()
+  showYourTurn();
 });
 
 //when someone wins
 socket.on("opponentWon", ({ message }) => {
-  showModal("lose")
-  opponentIsReady=false
+  showModal("lose");
+  opponentIsReady = false;
 });
 //when math is draw
 socket.on("matchDraw", ({ message }) => {
-  showModal("draw")
-  opponentIsReady=false;
+  showModal("draw");
+  opponentIsReady = false;
 });
 
-socket.on("opponentIsReady",()=>{
-  opponentIsReady=true
-})
+socket.on("opponentIsReady", () => {
+  opponentIsReady = true;
+});
 
 joinRoomBtn.addEventListener("click", () => {
   if (validateRoomCode(roomCodeInput.value)) {
+    //close input popup
+    showPopup(false)
     //start showing loader
     showLoader(true);
     //emit the joinroom request to the given room code
@@ -345,10 +379,12 @@ joinRoomBtn.addEventListener("click", () => {
 
 createRoomBtn.addEventListener("click", () => {
   const randomRoomNumber = Math.floor(Math.random() * 9000) + 1000;
-  showLoader(true)
+  showLoader(true);
+  
+    //close input popup
+    showPopup(false)
   socket.emit("joinRoom", {
     roomCode: randomRoomNumber,
-    username: ""
-
+    username: "",
   });
 });

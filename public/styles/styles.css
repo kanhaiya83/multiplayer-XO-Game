@@ -1,9 +1,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Comforter+Brush&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap");
+@font-face {
+  font-family: fuzzyBubbles;
+  src: url("./fonts/FuzzyBubbles.ttf");
+}
+@font-face {
+  font-family: veggy;
+  src: url("./fonts/veggy.ttf");
+}
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+}
+
+:root {
+  --bg-color: #222831;
+  --primary-color: #00fff5;
+  --secondary-color: #393e46;
+  --border-color: #4e545c;
+}
+
+body {
+  background-color: var(--bg-color);
+  font-family: fuzzyBubbles;
+  color: white;
 }
 
 .notification-container {
@@ -46,11 +67,120 @@
   width: 4rem;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  padding: 2rem 5% 0;
+.popup-bg {
+  background-color: #000000;
   width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  top: -1000px;
+  opacity: 0;
+}
+.popup-bg.show {
+  top: 0;
+  transition: opacity 400ms;
+  opacity: 0.4;
+}
+
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform: scale(0);
+  z-index: 101;
+}
+.popup-container.show {
+  transition: transform 400ms;
+  transition-delay: 300ms;
+  transform: scale(1);
+}
+.popup-container .popup {
+  width: 100%;
+  max-width: 500px;
+  background: white;
+  text-align: center;
+  padding: 1rem 3rem 2rem;
+  position: relative;
+  margin: 0 2rem;
+}
+.popup-container .popup .popup-close-btn {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  border: 2px solid var(--border-color);
+  border-radius: 100px;
+  font-size: 0rem;
+  padding: 7px;
+  background-color: white;
+}
+.popup-container .popup .popup-close-btn:hover {
+  cursor: pointer;
+}
+.popup-container .popup .popup-close-btn img {
+  width: 15px;
+}
+.popup-container .popup .popup-title {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #555555;
+  margin-bottom: 2rem;
+}
+.popup-container .popup .create-room {
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #bfbfbf;
+}
+.popup-container .popup .join-room {
+  padding-top: 2rem;
+}
+.popup-container .popup .join-room .join-room-btn {
+  margin-top: 1rem;
+}
+.popup-container .popup .join-room .input-warning span {
+  font-size: 0.7rem;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #ff4b4b;
+}
+.popup-container .popup .join-room input {
+  border: 1px solid var(--border-color);
+  padding: 10px 10px;
+  text-align: center;
+  width: 100%;
+  font-size: 0.9rem;
+  font-family: fuzzyBubbles;
+}
+.popup-container .popup .join-room input:focus {
+  outline: none;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 5% 0;
+  width: 100%;
+}
+.header .col-1, .header .col-2, .header .col-3 {
+  width: 100%;
+}
+.header .col-1 {
+  display: flex;
+  justify-content: start;
+}
+.header .col-2 {
+  display: flex;
+  justify-content: center;
+}
+.header .col-3 {
+  display: flex;
+  justify-content: end;
 }
 .header .user-details {
   height: fit-content;
@@ -65,34 +195,32 @@
 }
 .header .user-details .whoAreYou {
   position: absolute;
-  bottom: calc(100% + 3px );
+  bottom: calc(100% + 3px);
   left: 10px;
   color: #c9c9c9;
   font-size: 0.7rem;
 }
 .header .user-details .change-username {
   position: absolute;
-  bottom: calc(100% + 1px);
-  right: 20px;
-  color: #c0c0c0;
+  top: calc(100% + 4px);
+  right: 10px;
+  color: #c8c8c8;
   cursor: pointer;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
 }
 .header .user-details .user-icon {
-  height: fit-content;
-  margin-right: 20px;
+  height: 3rem;
+  margin-right: 10px;
   background-color: #fff;
   border-radius: 100px;
 }
-.header .user-details .user-icon svg, .header .user-details .user-icon img {
+.header .user-details .user-icon svg,
+.header .user-details .user-icon img {
   width: 3rem;
   height: 3rem;
 }
 .header .user-details .username {
   font-size: 0.7rem;
-  font-family: "roboto";
-  font-weight: 700;
-  color: #8f8f8f;
   position: relative;
 }
 .header .user-details .player-xo {
@@ -117,7 +245,7 @@
   outline: none;
 }
 .header .change-username-container button {
-  background-color: #6200EE;
+  background-color: #6200ee;
   color: white;
   padding: 0.5rem 1.2rem;
   border: none;
@@ -130,78 +258,82 @@
 .header .change-username-container button:focus {
   outline: none;
 }
-.header .heading {
-  height: fit-content;
-  text-align: center;
-  color: #5f5f5f;
-  font-family: "Comforter Brush";
-}
-
-.container {
-  max-width: 600px;
-  text-align: center;
-  margin: 0 auto;
-}
-.container .button-primary {
-  background-color: transparent;
-  color: #252525;
-  padding: 10px 10px;
-  border: 2px solid #000000;
-  width: 12rem;
-  margin: 15px 0;
-}
-.container .button-primary:focus {
-  outline: none;
-}
-.container .button-primary:hover {
-  background-color: #000000;
-  color: white;
-  cursor: pointer;
-}
-.container .input-container {
-  margin-top: 3rem;
-  height: 100%;
-}
-.container .input-container .join-room {
+.header .heading-wrapper {
+  align-self: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 2rem;
 }
-.container .input-container .join-room .input-warning {
-  transition: opacity 200ms;
-}
-.container .input-container .join-room .input-warning span {
-  font-size: 0.7rem;
-  font-family: Arial, Helvetica, sans-serif;
-  color: #ff4b4b;
-}
-.container .input-container .join-room .input-warning.hide {
-  transition: opacity 1ms;
-  opacity: 0;
-}
-.container .input-container .join-room .join-room-btn {
-  width: 8rem;
-  margin-top: 0;
-}
-.container .input-container .join-room .room-code-input {
-  padding: 10px 5px;
+.header .heading-wrapper .heading {
+  height: fit-content;
   text-align: center;
-  border: 1px solid #343434;
-  width: 12rem;
-  font-size: 0.8rem;
+  color: var(--primary-color);
+  font-size: 5rem;
+  font-weight: 500;
+  word-spacing: -12px;
+  font-family: "veggy";
 }
-.container .input-container .join-room .room-code-input:focus {
+
+.button-primary {
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  background-color: transparent;
+  color: white;
+  font-family: "fuzzyBubbles";
+  padding: 0.8rem 0;
+  margin: 0.5rem 0;
+  width: 100%;
+  max-width: 400px;
+}
+.button-primary:focus {
   outline: none;
+}
+.button-primary:hover {
+  background-color: var(--secondary-color);
+  cursor: pointer;
+}
+
+.button-secondary {
+  background: white;
+  color: white;
+  background-color: var(--secondary-color);
+  font-family: fuzzyBubbles;
+  border: 1px solid var(--border-color);
+  border-radius: 2px;
+  padding: 0.7rem 10px;
+  width: 70%;
+}
+.button-secondary:hover {
+  cursor: pointer;
+}
+
+.container {
+  margin: 0rem auto 0;
+  max-width: 600px;
+}
+.container .buttons-wrapper {
+  margin-top: 8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 .container .board-container {
   width: 100%;
   margin-top: 3rem;
+  text-align: center;
 }
-.container .board-container .room-info {
-  display: flex;
-  justify-content: space-between;
-  font-family: "Times New Roman", Times, serif;
+.container .board-container .turn-info {
+  font-size: 1.3rem;
+  color: white;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.container .board-container .footer .leave-room-btn {
+  text-align: center;
+  margin-top: 10px;
+  width: fit-content !important;
+  padding-right: 2rem;
+  padding-left: 2rem;
 }
 .container .board-container .svg-container {
   padding-bottom: 50px;
@@ -218,10 +350,6 @@
 .container .board-container .svg-container .frame {
   cursor: pointer;
 }
-.container .board-container .leave-room-btn {
-  text-align: center;
-  margin-top: 10px;
-}
 
 .d-none {
   display: none !important;
@@ -229,6 +357,29 @@
 
 .hide {
   opacity: 0 !important;
+}
+
+@media screen and (max-width: 900px) {
+  .header {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 5px;
+    row-gap: 20px;
+  }
+
+  .col-2 {
+    grid-column: 1/4;
+    grid-row: 1/2;
+  }
+
+  .col-1 {
+    grid-column: 1/2;
+    grid-row: 2/3;
+  }
+
+  .col-3 {
+    grid-column: 3/4;
+    grid-row: 2/3;
+  }
 }
 
 /*# sourceMappingURL=styles.css.map */

@@ -75,7 +75,7 @@
   padding: 3rem 2rem 2rem;
   border-radius: 1rem 1rem 0 0;
   transition: all 0.3s;
-
+margin: 0 2rem;
   /*=== Effect 1 ===*/
   transform: translateY(10%);
 
@@ -111,7 +111,8 @@
 }
 
 .modal__description {
-  margin-bottom: 1.5rem;
+  margin: 0.5rem 0 1.5rem;
+  color: #6e6e6e;
 }
 
 .modal__button-width {
