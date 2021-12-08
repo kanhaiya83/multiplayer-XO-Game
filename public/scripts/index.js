@@ -80,6 +80,10 @@ const frame6 = frames[6];
 const frame7 = frames[7];
 const frame8 = frames[8];
 
+const turnInfo=document.querySelector(".turn-info")
+
+
+
 const showLoader = (show) => {
   if (show) {
     loaderBg.classList.remove("d-none");
@@ -226,11 +230,23 @@ const leaveRoom = () => {
   });
 };
 //show on screen that it is player's turn to play
-const showYourTurn = () => {
-  console.log("Your turn!!");
+const showYourTurn = (turn) => {
+  if(turn){
+    yourTurn=true
+    turnInfo.textContent="Your turn!"
+  }
+  else if(turn==false){
+    turnInfo.textContent="Opponent's turn!"
+    yourTurn=false
+
+  }
+  else{
+    yourTurn=false
+    turnInfo.textContent=""
+  }
 };
 //reset game board,remove all moves
-const resetGame = () => {
+const resetGame = (swapTurns=false) => {
   frames.forEach((frame) => {
     frame.children[0].children[0].classList.remove("show");
     frame.children[0].children[1].classList.remove("show");
@@ -238,12 +254,16 @@ const resetGame = () => {
     frame.classList.remove("1");
   });
   //make both players turn to false
-  yourTurn = false;
-  //then randomly choose which one get to move first
-  if (X_O == 1) {
-    yourTurn = true;
-    showYourTurn();
+  showYourTurn(false)
+  //swap turns
+  if(swapTurns){
+    X_O=X_O==0?1:0;
   }
+  //then randomly choose which one get to move first
+   if(X_O==1){
+     showYourTurn(true)
+   }
+  
 };
 //validateRoomCode
 const validateRoomCode = (code) => {
@@ -271,7 +291,7 @@ frames.forEach((f) => {
       });
       //show the move on the board
       showXorO(f, X_O);
-      yourTurn = false;
+      showYourTurn(false)
       checkForWin();
     }
   });
@@ -298,8 +318,8 @@ socket.on("joinedRoom", (m) => {
   roomCode = m.roomCode;
   X_O = m.X_O;
   if (X_O == "1") {
-    yourTurn = true;
-    showYourTurn();
+    
+    showYourTurn(true)
   }
 
   //hide loader
@@ -327,8 +347,9 @@ socket.on(
 socket.on("opponentLeft", () => {
   showNotification("Opponent left!");
   updateOpponent("No opponent", "");
-  resetGame();
   X_O = 0;
+
+  resetGame();
 });
 socket.on("opponentUsername", ({ username, opponentAvatarSvg }) => {
   showNotification("You are playing against " + username);
@@ -342,8 +363,7 @@ socket.on("changedOpponentUsername", ({ username, opponentAvatarSvg }) => {
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
   showXorO(frames[m.place - 1], X_O == 1 ? 0 : 1);
-  yourTurn = true;
-  showYourTurn();
+  showYourTurn(true);
 });
 
 //when someone wins

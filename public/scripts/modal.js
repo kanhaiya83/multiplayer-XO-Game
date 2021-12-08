@@ -31,7 +31,7 @@ document.querySelector(".close-modal").addEventListener("click", () => {
 //play again
 document.querySelector(".play-again").addEventListener("click", () => {
   closeModal();
-  resetGame();
+  resetGame(true);
   socket.emit("playerIsReady")
 });
 function closeModal() {
