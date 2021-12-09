@@ -163,7 +163,7 @@ body {
   grid-template-columns: 1fr 2fr 1fr;
   justify-content: space-between;
   align-items: center;
-  padding: 0 5% 0;
+  padding: 3% 5% 0;
   width: 100%;
   .col-1,.col-2,.col-3{
     width: 100%;
@@ -192,6 +192,43 @@ body {
     border-radius: 20px;
 
     position: relative;
+    .player-xo {
+      position: absolute;
+      bottom: calc(100% + -1.5rem);
+      img {
+        width: 2.25rem;
+      }
+      .x-icon,.o-icon{
+        display: none;
+      }
+      &.show-x{
+        .x-icon{
+          display: block;
+        }
+        .o-icon{
+          display: none;
+        }
+      }
+      &.show-o{
+        .o-icon{
+          display: block;
+        }
+        .x-icon{
+          display: none;
+        }
+      }
+    }
+    &.player-details{
+     .player-xo{
+      left: -0.7rem;
+
+     }
+    }
+    &.opponent-details{
+      .player-xo {
+        right: -0.5rem;
+      }
+    }
     .whoAreYou {
       position: absolute;
       bottom: calc(100% + 3px);
@@ -223,12 +260,7 @@ body {
       font-size: 0.7rem;
       position: relative;
     }
-    .player-xo {
-      display: none;
-      img {
-        width: 3rem;
-      }
-    }
+   
   }
   .change-username-container {
     position: absolute;
@@ -236,11 +268,13 @@ body {
     width: 100%;
 
     input {
-      border: 1px solid #cdcdcd;
+      border: 1px solid var(--border-color);
       border-radius: 5px;
-      padding: 3px 5px;
-      font-size: 0.8rem;
+      padding: 5px 5px;
+      font-size: 0.7rem;
       margin-bottom: 10px;
+      background: transparent;
+      color: white;
       &:focus {
         outline: none;
       }
@@ -249,14 +283,18 @@ body {
       &:focus {
         outline: none;
       }
-      background-color: #6200ee;
+      &:hover{
+        color: var(--bg-color);
+        background: white;
+      }
+      background-color: transparent;
       color: white;
-      padding: 0.5rem 1.2rem;
-      border: none;
-      border-radius: 5rem;
-      font-family: "roboto";
+      padding: 0.3rem 1.2rem;
+      border: 1px solid var(--border-color);
+      border-radius: 1px;
+      font-family: 'fuzzyBubbles';
       font-size: 0.7rem;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
     }
   }

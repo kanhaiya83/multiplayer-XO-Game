@@ -164,7 +164,7 @@ body {
   grid-template-columns: 1fr 2fr 1fr;
   justify-content: space-between;
   align-items: center;
-  padding: 0 5% 0;
+  padding: 3% 5% 0;
   width: 100%;
 }
 .header .col-1, .header .col-2, .header .col-3 {
@@ -192,6 +192,34 @@ body {
   padding: 5px 15px;
   border-radius: 20px;
   position: relative;
+}
+.header .user-details .player-xo {
+  position: absolute;
+  bottom: calc(100% + -1.5rem);
+}
+.header .user-details .player-xo img {
+  width: 2.25rem;
+}
+.header .user-details .player-xo .x-icon, .header .user-details .player-xo .o-icon {
+  display: none;
+}
+.header .user-details .player-xo.show-x .x-icon {
+  display: block;
+}
+.header .user-details .player-xo.show-x .o-icon {
+  display: none;
+}
+.header .user-details .player-xo.show-o .o-icon {
+  display: block;
+}
+.header .user-details .player-xo.show-o .x-icon {
+  display: none;
+}
+.header .user-details.player-details .player-xo {
+  left: -0.7rem;
+}
+.header .user-details.opponent-details .player-xo {
+  right: -0.5rem;
 }
 .header .user-details .whoAreYou {
   position: absolute;
@@ -223,40 +251,40 @@ body {
   font-size: 0.7rem;
   position: relative;
 }
-.header .user-details .player-xo {
-  display: none;
-}
-.header .user-details .player-xo img {
-  width: 3rem;
-}
 .header .change-username-container {
   position: absolute;
   top: calc(100% + 15px);
   width: 100%;
 }
 .header .change-username-container input {
-  border: 1px solid #cdcdcd;
+  border: 1px solid var(--border-color);
   border-radius: 5px;
-  padding: 3px 5px;
-  font-size: 0.8rem;
+  padding: 5px 5px;
+  font-size: 0.7rem;
   margin-bottom: 10px;
+  background: transparent;
+  color: white;
 }
 .header .change-username-container input:focus {
   outline: none;
 }
 .header .change-username-container button {
-  background-color: #6200ee;
+  background-color: transparent;
   color: white;
-  padding: 0.5rem 1.2rem;
-  border: none;
-  border-radius: 5rem;
-  font-family: "roboto";
+  padding: 0.3rem 1.2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 1px;
+  font-family: "fuzzyBubbles";
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
 }
 .header .change-username-container button:focus {
   outline: none;
+}
+.header .change-username-container button:hover {
+  color: var(--bg-color);
+  background: white;
 }
 .header .heading-wrapper {
   align-self: center;

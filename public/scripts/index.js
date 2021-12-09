@@ -85,7 +85,22 @@ const frame8 = frames[8];
 
 const turnInfo=document.querySelector(".turn-info")
 
+function changeXoIcon(x_or_o){  
+  if(x_or_o==0){
+    document.querySelector(".player-details .player-xo").classList.add("show-x")
+    document.querySelector(".player-details .player-xo").classList.remove("show-o"
+    )
+    document.querySelector(".opponent-details .player-xo").classList.add("show-o")
+    document.querySelector(".opponent-details .player-xo").classList.remove("show-x")
+  }
+  else if(x_or_o==1){
+    document.querySelector(".player-details .player-xo").classList.add("show-o")
+    document.querySelector(".player-details .player-xo").classList.remove("show-x")
 
+    document.querySelector(".opponent-details .player-xo").classList.add("show-x")
+    document.querySelector(".opponent-details .player-xo").classList.remove("show-o")
+  }
+}
 
 const showLoader = (show) => {
   if (show) {
@@ -121,13 +136,20 @@ updatePlayer = (username) => {
   })
 };
 updatePlayer(generateRandomUsername())
-updateOpponent = (username) => {
-  fetchAvatar(username).then((svg)=>{
+updateOpponent = async(username) => {
+  if(username=="noOpponent"){
+    opponentUsername.innerHTML = "No Opponent!!";
+
+  opponentIcon.innerHTML =`<img src="./images/default-avatar.svg" alt="">`;
+  }
+  await fetchAvatar(username).then((svg)=>{
 
     
   opponentUsername.innerHTML = username;
 
   opponentIcon.innerHTML = svg;
+  console.log("changed the username")
+
   })
 };
 
@@ -269,6 +291,7 @@ const resetGame = (swapTurns=false) => {
   //swap turns
   if(swapTurns){
     X_O=X_O==0?1:0;
+    changeXoIcon(X_O)
   }
   //then randomly choose which one get to move first
    if(X_O==1){
@@ -328,6 +351,7 @@ socket.on("joinedRoom", (m) => {
   //initialize roomcode and xORo
   roomCode = m.roomCode;
   X_O = m.X_O;
+  changeXoIcon(X_O)
   if (X_O == "1") {
     
     showYourTurn(true)
@@ -344,11 +368,11 @@ socket.on("roomFull", () => {
 //when another player joins your room
 socket.on(
   "opponentJoined",
-  ({ message, opponentUsername }) => {
+ async  ({ message, opponentUsername }) => {
     resetGame();
     showLoader(true)
 
-    updateOpponent(opponentUsername);
+   await  updateOpponent(opponentUsername);
     showLoader(false)
     showNotification(opponentUsername + " has joined the game!!");
     socket.emit("playerUsername", {
@@ -360,20 +384,22 @@ socket.on(
 );
 socket.on("opponentLeft", () => {
   showNotification("Opponent left!");
-  updateOpponent("No opponent");
+  updateOpponent("noOpponent");
   X_O = 0;
+  changeXoIcon(X_O)
 
   resetGame();
 });
-socket.on("opponentUsername", ({ username }) => {
+socket.on("opponentUsername", async ({ username }) => {
   showLoader(true)
-  updateOpponent(username);
+  await updateOpponent(username);
   showLoader(false)
   showNotification("You are playing against " + username);
   opponentIsReady = true;
 });
-socket.on("changedOpponentUsername", ({ username }) => {
-  updateOpponent(username);
+socket.on("changedOpponentUsername", async({ username }) => {
+  await updateOpponent(username);
+  console.log("Show notification")
   
   showNotification("Opponent changed username to " + username);
 });
