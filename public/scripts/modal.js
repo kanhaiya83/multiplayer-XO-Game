@@ -3,6 +3,7 @@
 const modalContainer = document.querySelector("#modal-container");
 const modalTitle = document.querySelector(".modal__title");
 const modalDescription = document.querySelector(".modal__description");
+const body=document.querySelector("body")
 const showModal = (status) => {
   if (status == "win") {
     modalTitle.textContent = "You Won!!!";
@@ -18,6 +19,8 @@ const showModal = (status) => {
       "When an unstoppable force meets an immovable object!";
     modalContainer.classList.add("show-modal");
   }
+  body.style.overflow="hidden"
+
 };
 //leave btn
 document.querySelector(".close-modal").addEventListener("click", () => {
@@ -35,5 +38,6 @@ document.querySelector(".play-again").addEventListener("click", () => {
   socket.emit("playerIsReady")
 });
 function closeModal() {
+  body.style.overflow="auto"
   modalContainer.classList.remove("show-modal");
 }

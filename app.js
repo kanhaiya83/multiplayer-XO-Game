@@ -1,40 +1,21 @@
 const express = require("express");
-const Generator = require("do-usernames");
 const app = express();
 
-//for avataars
-const  { createAvatar } = require('@dicebear/avatars');
-const avatarStyle = require('@dicebear/big-smile');
-// set the view engine to ejs
-app.set('view engine', 'ejs');
 
-
-
-app.use(express.static("public"));
 
 var http = require("http").Server(app);
 
-var io = require("socket.io")(http);
+var io = require("socket.io")(http,{
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
 const port = process.env.PORT || 3001;
 
 
-const generateAvatarSvg=(seed)=>{
-  return createAvatar(avatarStyle, {
-    seed: seed.trim()
-  });
-}
 app.get("/", (req, res) => {
-  const myGenerator = new Generator({
-    size: 15,
-  });
-  let username=myGenerator.getName()
-
-
-  let userProfileSvg = generateAvatarSvg(username)
-
-
-  
-  res.render("index",{username,userProfileSvg})
+  res.send("Website location changed.Please click <a href=\"https://xo404.netlify.app\">here</a> to visit at new location")
 });
 
 const getRoomClientsNumber = (roomCode) => {
@@ -45,6 +26,8 @@ const getRoomClientsNumber = (roomCode) => {
 };
 //Whenever someone connects this gets executed
 io.on("connection", function (socket) {
+  socket.on("test-1",()=>{
+  })
   socket.on("joinRoom", ({ roomCode, username }) => {
     let userX_O;
 
@@ -60,7 +43,6 @@ io.on("connection", function (socket) {
       socket.to("room-" + roomCode).emit("opponentJoined", {
         message: "new player joined in room no. " + roomCode,
         opponentUsername: username,
-        opponentAvatarSvg:generateAvatarSvg(username)
 
       });
 
@@ -94,12 +76,12 @@ io.on("connection", function (socket) {
 
   socket.on("playerIsReady",()=>{socket.to("room-"+socket.roomCode).emit("opponentIsReady")})
   socket.on("playerUsername", ({ username }) => {
-    socket.to("room-" + socket.roomCode).emit("opponentUsername", { username:username,opponentAvatarSvg:generateAvatarSvg(username) });
+    socket.to("room-" + socket.roomCode).emit("opponentUsername", { username:username});
   });
   socket.on("changedPlayerUsername", ({ username }) => {
     socket
       .to("room-" + socket.roomCode)
-      .emit("changedOpponentUsername", { username ,opponentAvatarSvg: generateAvatarSvg(username)});
+      .emit("changedOpponentUsername", { username });
   });
 
   socket.on("leaveRoom", ({ roomCode }) => {

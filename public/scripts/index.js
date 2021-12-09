@@ -1,3 +1,6 @@
+
+
+
 const playWithFriendBtn = document.querySelector("button.play-with-friend");
 const playOfflineBtn = document.querySelector("button.play-offline");
 const playWithBotBtn = document.querySelector("button.play-with-bot");
@@ -100,23 +103,34 @@ const showNotification = (message, time = 2000) => {
   }, time);
 };
 
-updatePlayer = (username, svg) => {
-  playerUsername.innerHTML = username;
-  playerIcon.innerHTML = svg;
-};
-
-updateOpponent = (username, svg) => {
-  opponentUsername.innerHTML = username;
-
-  opponentIcon.innerHTML = svg;
-};
-
 const fetchAvatar = async (seed) => {
   const data = await fetch(
     "https://avatars.dicebear.com/api/big-smile/" + seed.trim() + ".svg"
   );
   let svg = await data.text();
   return svg;
+};
+updatePlayer = (username) => {
+  showLoader(true)
+  fetchAvatar(username).then((svg)=>{
+
+    
+  playerUsername.innerHTML = username;
+  playerIcon.innerHTML = svg;
+  showLoader(false)
+  })
+};
+updatePlayer(generateRandomUsername())
+updateOpponent = (username) => {
+  showLoader(true)
+  fetchAvatar(username).then((svg)=>{
+
+    
+  opponentUsername.innerHTML = username;
+
+  opponentIcon.innerHTML = svg;
+  showLoader(false)
+  })
 };
 
 changeBtn.addEventListener("click", () => {
@@ -125,10 +139,9 @@ changeBtn.addEventListener("click", () => {
   changeUsernameContainer.classList.remove("d-none");
 });
 changeUsernameBtn.addEventListener("click", async () => {
+ 
+  updatePlayer(changeUsernameInput.value);
   showLoader(true);
-
-  let avatarSvg = await fetchAvatar(changeUsernameInput.value);
-  updatePlayer(changeUsernameInput.value, avatarSvg);
   //hide input and button
   changeUsernameContainer.classList.add("d-none");
   //show change btn
@@ -333,9 +346,9 @@ socket.on("roomFull", () => {
 //when another player joins your room
 socket.on(
   "opponentJoined",
-  ({ message, opponentUsername, opponentAvatarSvg }) => {
+  ({ message, opponentUsername }) => {
     resetGame();
-    updateOpponent(opponentUsername, opponentAvatarSvg);
+    updateOpponent(opponentUsername);
     showNotification(opponentUsername + " has joined the game!!");
     socket.emit("playerUsername", {
       username: playerUsername.textContent,
@@ -346,19 +359,19 @@ socket.on(
 );
 socket.on("opponentLeft", () => {
   showNotification("Opponent left!");
-  updateOpponent("No opponent", "");
+  updateOpponent("No opponent");
   X_O = 0;
 
   resetGame();
 });
-socket.on("opponentUsername", ({ username, opponentAvatarSvg }) => {
+socket.on("opponentUsername", ({ username }) => {
   showNotification("You are playing against " + username);
-  updateOpponent(username, opponentAvatarSvg);
+  updateOpponent(username);
   opponentIsReady = true;
 });
-socket.on("changedOpponentUsername", ({ username, opponentAvatarSvg }) => {
+socket.on("changedOpponentUsername", ({ username }) => {
   showNotification("Opponent changed username to " + username);
-  updateOpponent(username, opponentAvatarSvg);
+  updateOpponent(username);
 });
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
