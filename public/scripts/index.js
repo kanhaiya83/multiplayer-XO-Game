@@ -122,14 +122,12 @@ updatePlayer = (username) => {
 };
 updatePlayer(generateRandomUsername())
 updateOpponent = (username) => {
-  showLoader(true)
   fetchAvatar(username).then((svg)=>{
 
     
   opponentUsername.innerHTML = username;
 
   opponentIcon.innerHTML = svg;
-  showLoader(false)
   })
 };
 
@@ -348,7 +346,10 @@ socket.on(
   "opponentJoined",
   ({ message, opponentUsername }) => {
     resetGame();
+    showLoader(true)
+
     updateOpponent(opponentUsername);
+    showLoader(false)
     showNotification(opponentUsername + " has joined the game!!");
     socket.emit("playerUsername", {
       username: playerUsername.textContent,
@@ -365,13 +366,16 @@ socket.on("opponentLeft", () => {
   resetGame();
 });
 socket.on("opponentUsername", ({ username }) => {
-  showNotification("You are playing against " + username);
+  showLoader(true)
   updateOpponent(username);
+  showLoader(false)
+  showNotification("You are playing against " + username);
   opponentIsReady = true;
 });
 socket.on("changedOpponentUsername", ({ username }) => {
-  showNotification("Opponent changed username to " + username);
   updateOpponent(username);
+  
+  showNotification("Opponent changed username to " + username);
 });
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
