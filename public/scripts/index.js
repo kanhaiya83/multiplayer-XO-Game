@@ -1,5 +1,5 @@
-// var socket = io("https://xo404.herokuapp.com");
-socket = io("localhost:4000");
+ socket = io("https://xo404.herokuapp.com");
+//socket = io("localhost:4000");
 console.log({ socket });
 
 playWithFriendBtn.addEventListener("click", () => {
