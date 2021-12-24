@@ -11,7 +11,7 @@ var io = require("socket.io")(http,{
     methods: ["GET", "POST"]
   }
 });
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 4000;
 
 
 app.get("/", (req, res) => {
@@ -26,6 +26,7 @@ const getRoomClientsNumber = (roomCode) => {
 };
 //Whenever someone connects this gets executed
 io.on("connection", function (socket) {
+  console.log("A new user has connete")
   socket.on("test-1",()=>{
   })
   socket.on("joinRoom", ({ roomCode, username }) => {

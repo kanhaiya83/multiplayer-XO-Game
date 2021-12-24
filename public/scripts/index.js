@@ -1,303 +1,178 @@
+// var socket = io("https://xo404.herokuapp.com");
+socket = io("localhost:4000");
+console.log({ socket });
 
-
-
-const playWithFriendBtn = document.querySelector("button.play-with-friend");
-const playOfflineBtn = document.querySelector("button.play-offline");
-const playWithBotBtn = document.querySelector("button.play-with-bot");
-const popupBackdrop = document.querySelector(".popup-bg");
-const popupContainer = document.querySelector(".popup-container");
-const popupCloseBtn = document.querySelector(".popup-close-btn");
-
-const showPopup = (show = true) => {
-  if (show) {
-    popupBackdrop.classList.add("show");
-    popupContainer.classList.add("show");
-  } else {
-    popupBackdrop.classList.remove("show");
-    popupContainer.classList.remove("show");
-  }
-};
-popupCloseBtn.addEventListener("click",()=>{
-  showPopup(false)
-})
 playWithFriendBtn.addEventListener("click", () => {
-  showPopup(true);
+  showRoomPopup(true);
+  gameMode = "online";
+  game = {
+    playerSide: "x", //value either x or o
+    yourTurn: false, //boolean
+    opponentIsReady: false, //boolean
+  };
 });
 
 playOfflineBtn.addEventListener("click", () => {
-  console.log("object");
-});
+  showLoader(true);
+  (gameMode = "offline"),
+    (game = {
+      whoseTurn: "x", //x or o
+      player1: "x",
+      player2: "o",
+    });
+  //randomly assign the turn
+  game.whoseTurn = randomizeOfflineTurn();
+  //show the board
+  showGameBoard();
+  //show whose turn is this
+  showWhoseTurnMessage(game.whoseTurn);
+  //show xo icons
 
+  changeXoIcon("o");
+  updateOpponent(generateRandomUsername())
+  showOpponentProfile()
+  showLoader(false);
+});
 playWithBotBtn.addEventListener("click", () => {
-  console.log("object");
+  showLoader(true);
+  gameMode = "bot";
+
+  game = {
+    playerSide: "",
+    moves: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    isPlayerTurn: false,
+  };
+  game.playerSide = randomizeOfflineTurn();
+  game.isPlayerTurn = true;
+  //clears moves on board just in case
+  clearBoard();
+
+  showGameBoard();
+
+  showWhoseTurnMessage("player");
+
+  changeXoIcon(game.playerSide);
+  
+  updateOpponent("Mr. Bot");
+  showOpponentProfile()
+
+
+  showLoader(false);
 });
 
-let roomCode = null;
-let X_O = null;
-let yourTurn = false;
-let opponentIsReady = false;
-const boardContainer = document.querySelector(".board-container");
-const leaveBtn = document.querySelector(".leave-room-btn");
-
-const buttonsWrapper = document.querySelector(".buttons-wrapper");
-
-const createRoomBtn = document.querySelector(".create-room-btn");
-const joinRoomBtn = document.querySelector(".join-room-btn");
-const roomCodeInput = document.querySelector(".room-code-input");
-const inputWarning = document.querySelector(".input-warning");
-
-const roomNumberContainer = document.querySelector(".room-number");
-
-const playerUsername = document.querySelector(".player-details .username span");
-const playerIcon = document.querySelector(".player-details .user-icon");
-
-const opponentDetailsContainer = document.querySelector(".opponent-details");
-const opponentUsername = document.querySelector(
-  ".opponent-details .username span"
-);
-const opponentIcon = document.querySelector(".opponent-details .user-icon");
-
-const changeBtn = document.querySelector(".change-username");
-const changeUsernameContainer = document.querySelector(
-  ".change-username-container"
-);
-const changeUsernameInput = document.querySelector(
-  ".change-username-container input"
-);
-const changeUsernameBtn = document.querySelector(
-  ".change-username-container button"
-);
-
-const loaderBg = document.querySelector(".loader-bg");
-
-const notificationContainer = document.querySelector(".notification-container");
-
-const frames = document.querySelectorAll(".frame");
-const frame0 = frames[0];
-const frame1 = frames[1];
-const frame2 = frames[2];
-const frame3 = frames[3];
-const frame4 = frames[4];
-const frame5 = frames[5];
-const frame6 = frames[6];
-const frame7 = frames[7];
-const frame8 = frames[8];
-
-const turnInfo=document.querySelector(".turn-info")
-
-function changeXoIcon(x_or_o){  
-  if(x_or_o==0){
-    document.querySelector(".player-details .player-xo").classList.add("show-x")
-    document.querySelector(".player-details .player-xo").classList.remove("show-o"
-    )
-    document.querySelector(".opponent-details .player-xo").classList.add("show-o")
-    document.querySelector(".opponent-details .player-xo").classList.remove("show-x")
+function calculateAMove() {
+  let availableMoves = [];
+  game.moves.forEach((e, i) => {
+    if (e == 1) {
+    } else {
+      availableMoves.push(i);
+    }
+  });
+  if (availableMoves.length == 0) {
+    return -1;
   }
-  else if(x_or_o==1){
-    document.querySelector(".player-details .player-xo").classList.add("show-o")
-    document.querySelector(".player-details .player-xo").classList.remove("show-x")
-
-    document.querySelector(".opponent-details .player-xo").classList.add("show-x")
-    document.querySelector(".opponent-details .player-xo").classList.remove("show-o")
-  }
+  let rand = Math.floor(Math.random() * availableMoves.length);
+  return availableMoves[rand];
 }
 
-const showLoader = (show) => {
-  if (show) {
-    loaderBg.classList.remove("d-none");
+function randomizeOfflineTurn() {
+  if (Math.random() > 0.5) {
+    return "x";
   } else {
-    loaderBg.classList.add("d-none");
+    return "o";
   }
-};
+}
+function showGameBoard() {
+  //show board
+  boardContainer.classList.remove("d-none");
+  //hide input
+  buttonsWrapper.classList.add("d-none");
+}
 
-const showNotification = (message, time = 2000) => {
-  document.querySelector(".notification").textContent = message;
-  notificationContainer.classList.add("show-notification");
-  setTimeout(() => {
-    notificationContainer.classList.remove("show-notification");
-  }, time);
-};
-
-const fetchAvatar = async (seed) => {
-  const data = await fetch(
-    "https://avatars.dicebear.com/api/big-smile/" + seed.trim() + ".svg"
-  );
-  let svg = await data.text();
-  return svg;
-};
-updatePlayer = (username) => {
-  showLoader(true)
-  fetchAvatar(username).then((svg)=>{
-
-    
-  playerUsername.innerHTML = username;
-  playerIcon.innerHTML = svg;
-  showLoader(false)
-  })
-};
-updatePlayer(generateRandomUsername())
-updateOpponent = async(username) => {
-  if(username=="noOpponent"){
-    opponentUsername.innerHTML = "No Opponent!!";
-
-  opponentIcon.innerHTML =`<img src="./images/default-avatar.svg" alt="">`;
-  }
-  await fetchAvatar(username).then((svg)=>{
-
-    
-  opponentUsername.innerHTML = username;
-
-  opponentIcon.innerHTML = svg;
-  console.log("changed the username")
-
-  })
-};
-
-changeBtn.addEventListener("click", () => {
-  changeBtn.classList.add("hide");
-
-  changeUsernameContainer.classList.remove("d-none");
-});
-changeUsernameBtn.addEventListener("click", async () => {
- 
-  updatePlayer(changeUsernameInput.value);
-  showLoader(true);
-  //hide input and button
-  changeUsernameContainer.classList.add("d-none");
-  //show change btn
-  changeBtn.classList.remove("hide");
-  //emit the username so that it can reflect on the opponent side
-  socket.emit("changedPlayerUsername", { username: changeUsernameInput.value });
-  showLoader(false);
-  showNotification("Username changed!!!", 1000);
-});
-
-const showXorO = (frame, xOro) => {
-  frame.children[0].children[xOro].classList.add("show");
-  frame.classList.add(xOro);
-};
-//#region win/lose logic
-//check for combination in straight lines
-const straightLinesCheck = (xo) => {
-  const temp =
-    (frame0.classList.contains(xo) &&
-      frame1.classList.contains(xo) &&
-      frame2.classList.contains(xo)) ||
-    (frame3.classList.contains(xo) &&
-      frame4.classList.contains(xo) &&
-      frame5.classList.contains(xo)) ||
-    (frame6.classList.contains(xo) &&
-      frame7.classList.contains(xo) &&
-      frame8.classList.contains(xo)) ||
-    (frame0.classList.contains(xo) &&
-      frame3.classList.contains(xo) &&
-      frame6.classList.contains(xo)) ||
-    (frame1.classList.contains(xo) &&
-      frame4.classList.contains(xo) &&
-      frame7.classList.contains(xo)) ||
-    (frame2.classList.contains(xo) &&
-      frame5.classList.contains(xo) &&
-      frame8.classList.contains(xo));
-
-  return temp;
-};
-//check for combination in diagonal lines
-
-const DiagonalLinesCheck = (xo) => {
-  const temp =
-    (frame0.classList.contains(xo) &&
-      frame4.classList.contains(xo) &&
-      frame8.classList.contains(xo)) ||
-    (frame2.classList.contains(xo) &&
-      frame4.classList.contains(xo) &&
-      frame6.classList.contains(xo));
-
-  return temp;
-};
-//check both straight and diagonal combination for both X and O
-const checkForWin = () => {
-  if (straightLinesCheck("0") || DiagonalLinesCheck("0")) {
-    console.log({ X_O });
-    if (X_O == "0") {
-      socket.emit("playerWon");
-      showModal("win");
-      opponentIsReady = false;
-    }
-  } else if (straightLinesCheck("1") || DiagonalLinesCheck("1")) {
-    console.log({ X_O });
-    if (X_O == "1") {
-      socket.emit("playerWon");
-      showModal("win");
-      opponentIsReady = false;
-    }
-  } else {
-    checkForDraw();
-  }
-};
-//check for draw
-const checkForDraw = () => {
-  let isDraw = true;
-  frames.forEach((f) => {
-    if (!(f.classList.contains("0") || f.classList.contains("1"))) {
-      isDraw = false;
-    }
-  });
-  console.log(isDraw);
-  if (isDraw) {
-    socket.emit("draw", { roomCode });
-  }
-};
-//#endregion win/lose logic
-
-//leave the room
-const leaveRoom = () => {
-  socket.emit("leaveRoom", { roomCode });
-
-  socket.on("leftRoom", () => {
-    //hide board
-    boardContainer.classList.add("d-none");
-    //show input
-    buttonsWrapper.classList.remove("d-none");
-    //remove loader
-    showLoader(false);
-  });
-};
-//show on screen that it is player's turn to play
-const showYourTurn = (turn) => {
-  if(turn){
-    yourTurn=true
-    turnInfo.textContent="Your turn!"
-  }
-  else if(turn==false){
-    turnInfo.textContent="Opponent's turn!"
-    yourTurn=false
-
-  }
-  else{
-    yourTurn=false
-    turnInfo.textContent=""
-  }
-};
-//reset game board,remove all moves
-const resetGame = (swapTurns=false) => {
+function hideGameBoard() {
+  //hide board
+  boardContainer.classList.add("d-none");
+  //show input
+  buttonsWrapper.classList.remove("d-none");
+}
+function clearBoard() {
   frames.forEach((frame) => {
     frame.children[0].children[0].classList.remove("show");
     frame.children[0].children[1].classList.remove("show");
-    frame.classList.remove("0");
-    frame.classList.remove("1");
+    frame.classList.remove("x");
+    frame.classList.remove("o");
   });
+}
+
+//show on screen that it is player's turn to play
+const showYourTurn = (turn) => {
+    if (turn) {
+      yourTurn = true;
+      turnInfo.textContent = "Your turn!";
+    } else if (turn == false) {
+      turnInfo.textContent = "Opponent's turn!";
+      yourTurn = false;
+    } else {
+      yourTurn = false;
+      turnInfo.textContent = "";
+    }
+  }
+
+
+const showWhoseTurnMessage = (turn) => {
+  if (turn === false && turn === "false" && turn === "") {
+    turnInfo.textContent = "";
+    return;
+  } else if (gameMode === "offline") {
+    if (turn == "x") {
+      turnInfo.textContent = "Mr. X's Turn!";
+      turnX = true;
+    } else if (turn=="o") {
+      turnInfo.textContent = "Mr. O's Turn!";
+      turnY = true;
+    }
+  } else if (gameMode === "bot") {
+    if (turn == "player") {
+      turnInfo.textContent = "Your Turn!";
+    } else if (turn=="bot") {
+      turnInfo.textContent = "Mr. Bot's Turn!";
+    }
+  }
+};
+
+//reset game board,remove all moves
+const resetOnlineGame = (swapTurns = false) => {
+  clearBoard();
   //make both players turn to false
-  showYourTurn(false)
+  showYourTurn(false);
+
   //swap turns
-  if(swapTurns){
-    X_O=X_O==0?1:0;
-    changeXoIcon(X_O)
+  if (swapTurns) {
+    game.playerSide = game.playerSide == "x" ? "o" : "x"; //swap the player's turns
+    changeXoIcon(game.playerSide);
   }
   //then randomly choose which one get to move first
-   if(X_O==1){
-     showYourTurn(true)
-   }
-  
+  if (game.playerSide == "o") {
+    showYourTurn(true);
+  }
+};
+//reset game board,remove all moves
+const resetGame = () => {
+  if (gameMode == "offline") {
+    clearBoard();
+
+    //make both players turn to false
+    showWhoseTurnMessage(false);
+    game.whoseTurn = randomizeOfflineTurn();
+    showWhoseTurnMessage(game.whoseTurn);
+  } else if (gameMode == "bot") {
+    clearBoard();
+
+    game.playerSide = randomizeOfflineTurn();
+    showWhoseTurnMessage("player");
+    game.moves = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    game.isPlayerTurn = true;
+  }
 };
 //validateRoomCode
 const validateRoomCode = (code) => {
@@ -309,34 +184,113 @@ const validateRoomCode = (code) => {
 
   return true;
 };
+function showBotLoader() {}
+function makeBotMove() {
+  let randomEmptyFrameIndex = calculateAMove();
+
+  game.moves[randomEmptyFrameIndex]=1
+  showXorO(frames[randomEmptyFrameIndex], game.playerSide === "x" ? "o" : "x");
+}
 //adding event listeners
 frames.forEach((f) => {
   f.addEventListener("click", () => {
-    if (
-      !f.classList.contains(0) &&
-      !f.classList.contains(1) &&
-      yourTurn &&
-      opponentIsReady
-    ) {
-      //emit to server that player has moved
-      socket.emit("playerMoved", {
-        place: f.dataset.serial,
-        roomCode: roomCode,
-      });
-      //show the move on the board
-      showXorO(f, X_O);
-      showYourTurn(false)
-      checkForWin();
+    if (gameMode === "online") {
+      if (
+        !f.classList.contains("x") &&
+        !f.classList.contains("o") &&
+        yourTurn &&
+        opponentIsReady
+      ) {
+        //emit to server that player has moved
+        socket.emit("playerMoved", {
+          place: f.dataset.serial,
+          roomCode: socket.roomCode,
+        });
+        //show the move on the board
+        showXorO(f, game.playerSide);
+        showYourTurn(false);
+        checkForWin();
+      }
+    } else if (gameMode === "offline") {
+      if (!f.classList.contains("x") && !f.classList.contains("o")) {
+        //show the move on the board
+        showXorO(f, game.whoseTurn);
+        game.whoseTurn = game.whoseTurn == "x" ? "o" : "x";
+        checkForWin();
+        showWhoseTurnMessage(game.whoseTurn);
+      }
+    } else if (gameMode === "bot") {
+      if (
+        !f.classList.contains("x") &&
+        !f.classList.contains("o") &&
+        game.isPlayerTurn
+      ) {
+        //show the move on the board
+        showXorO(f, game.playerSide);
+        //update the array
+        game.moves[f.dataset.serial] = 1;
+
+        game.isPlayerTurn = false;
+        let gameFinished = checkForWin();
+        if (!gameFinished) {
+          showWhoseTurnMessage("bot");
+          showBotLoader(true);
+          setTimeout(() => {
+            makeBotMove();
+            gameFinished=checkForWin()
+            if(!gameFinished){
+
+              showBotLoader(false);
+
+              showWhoseTurnMessage("player");
+              
+            game.isPlayerTurn = true;
+            }
+          }, 2000);
+        }
+      }
     }
   });
 });
+
+//leave the online room
+const leaveOnlineRoom = () => {
+  socket.emit("leaveRoom", { roomCode: socket.roomCode });
+
+  socket.on("leftRoom", () => {
+    hideGameBoard();
+    clearBoard();
+    //remove loader
+    showLoader(false);
+    opponentDetailsContainer.classList.add("hide");
+  });
+};
+//leave the room ; works for both bot and offline mode
+const leaveRoom = () => {
+  hideGameBoard();
+
+  clearBoard();
+
+  showWhoseTurnMessage(false);
+
+  changeXoIcon(false);
+showOpponentProfile(false);
+  //remove loader
+  showLoader(false);
+};
 //leave button event listener
 leaveBtn.addEventListener("click", () => {
   showLoader(true);
-  leaveRoom();
-  resetGame();
-  opponentDetailsContainer.classList.add("hide");
+  if (gameMode === "online") {
+    leaveOnlineRoom();
+  } else if (gameMode === "offline" || gameMode === "bot") {
+    leaveRoom();
+  }
+  showLoader(false);
 });
+
+
+//((((only socket io section below))))
 //when player successfully joins the room
 socket.on("joinedRoom", (m) => {
   socket.roomCode = m.roomCode;
@@ -345,16 +299,16 @@ socket.on("joinedRoom", (m) => {
   //show the gameboard
   boardContainer.classList.remove("d-none");
   //display the room code
-  roomNumberContainer.innerHTML = "Room:" + m.roomCode;
+  roomNumberContainer.innerHTML = "Room:" + socket.roomCode;
   //show opponent
   opponentDetailsContainer.classList.remove("hide");
-  //initialize roomcode and xORo
-  roomCode = m.roomCode;
-  X_O = m.X_O;
-  changeXoIcon(X_O)
-  if (X_O == "1") {
-    
-    showYourTurn(true)
+  //server sends a variable X_O with a value of either 1 or 0 to both player and opponent,we chose the player's side based on this number
+  game.playerSide = m.X_O == 0 ? "x" : "o";
+
+  changeXoIcon(game.playerSide);
+  
+  if (game.playerSide == "o") {
+    showYourTurn(true);
   }
 
   //hide loader
@@ -366,46 +320,46 @@ socket.on("roomFull", () => {
   showNotification("The room is full!!");
 });
 //when another player joins your room
-socket.on(
-  "opponentJoined",
- async  ({ message, opponentUsername }) => {
-    resetGame();
-    showLoader(true)
+socket.on("opponentJoined", async ({ message, opponentUsername }) => {
+  resetOnlineGame();
+  showLoader(true);
 
-   await  updateOpponent(opponentUsername);
-    showLoader(false)
-    showNotification(opponentUsername + " has joined the game!!");
-    socket.emit("playerUsername", {
-      username: playerUsername.textContent,
-      roomCode: roomCode,
-    });
-    opponentIsReady = true;
-  }
-);
+
+  await updateOpponent(opponentUsername);
+  showLoader(false);
+  showNotification(opponentUsername + " has joined the game!!");
+  
+  socket.emit("playerUsername", {
+    username: playerUsername.textContent,
+    roomCode: socket.roomCode,
+  });
+  opponentIsReady = true;
+});
 socket.on("opponentLeft", () => {
   showNotification("Opponent left!");
   updateOpponent("noOpponent");
-  X_O = 0;
-  changeXoIcon(X_O)
+  game.playerSide = "x";
+  changeXoIcon(false); //make icon disappear
 
   resetGame();
 });
 socket.on("opponentUsername", async ({ username }) => {
-  showLoader(true)
+  showLoader(true);
   await updateOpponent(username);
-  showLoader(false)
+  showLoader(false);
   showNotification("You are playing against " + username);
+  
   opponentIsReady = true;
 });
-socket.on("changedOpponentUsername", async({ username }) => {
+socket.on("changedOpponentUsername", async ({ username }) => {
   await updateOpponent(username);
-  console.log("Show notification")
-  
+  console.log("Show notification");
+
   showNotification("Opponent changed username to " + username);
 });
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
-  showXorO(frames[m.place - 1], X_O == 1 ? 0 : 1);
+  showXorO(frames[m.place - 1], game.playerSide == "x" ? "o" : "x");
   showYourTurn(true);
 });
 
@@ -427,7 +381,7 @@ socket.on("opponentIsReady", () => {
 joinRoomBtn.addEventListener("click", () => {
   if (validateRoomCode(roomCodeInput.value)) {
     //close input popup
-    showPopup(false)
+    showRoomPopup(false);
     //start showing loader
     showLoader(true);
     //emit the joinroom request to the given room code
@@ -443,9 +397,9 @@ joinRoomBtn.addEventListener("click", () => {
 createRoomBtn.addEventListener("click", () => {
   const randomRoomNumber = Math.floor(Math.random() * 9000) + 1000;
   showLoader(true);
-  
-    //close input popup
-    showPopup(false)
+
+  //close input popup
+  showRoomPopup(false);
   socket.emit("joinRoom", {
     roomCode: randomRoomNumber,
     username: "",

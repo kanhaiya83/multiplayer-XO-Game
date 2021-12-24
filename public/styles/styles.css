@@ -67,7 +67,7 @@ body {
   width: 4rem;
 }
 
-.popup-bg {
+.room-popup-bg {
   background-color: #000000;
   width: 100%;
   height: 100%;
@@ -78,13 +78,13 @@ body {
   top: -1000px;
   opacity: 0;
 }
-.popup-bg.show {
+.room-popup-bg.show {
   top: 0;
   transition: opacity 400ms;
   opacity: 0.4;
 }
 
-.popup-container {
+.room-popup-container {
   position: fixed;
   top: 0;
   left: 0;
@@ -96,12 +96,12 @@ body {
   transform: scale(0);
   z-index: 101;
 }
-.popup-container.show {
+.room-popup-container.show {
   transition: transform 400ms;
   transition-delay: 300ms;
   transform: scale(1);
 }
-.popup-container .popup {
+.room-popup-container .popup {
   width: 100%;
   max-width: 500px;
   background: white;
@@ -110,7 +110,7 @@ body {
   position: relative;
   margin: 0 2rem;
 }
-.popup-container .popup .popup-close-btn {
+.room-popup-container .popup .popup-close-btn {
   position: absolute;
   top: -16px;
   right: -16px;
@@ -120,34 +120,34 @@ body {
   padding: 7px;
   background-color: white;
 }
-.popup-container .popup .popup-close-btn:hover {
+.room-popup-container .popup .popup-close-btn:hover {
   cursor: pointer;
 }
-.popup-container .popup .popup-close-btn img {
+.room-popup-container .popup .popup-close-btn img {
   width: 15px;
 }
-.popup-container .popup .popup-title {
+.room-popup-container .popup .popup-title {
   text-align: center;
   font-size: 1.5rem;
   color: #555555;
   margin-bottom: 2rem;
 }
-.popup-container .popup .create-room {
+.room-popup-container .popup .create-room {
   padding-bottom: 2rem;
   border-bottom: 1px solid #bfbfbf;
 }
-.popup-container .popup .join-room {
+.room-popup-container .popup .join-room {
   padding-top: 2rem;
 }
-.popup-container .popup .join-room .join-room-btn {
+.room-popup-container .popup .join-room .join-room-btn {
   margin-top: 1rem;
 }
-.popup-container .popup .join-room .input-warning span {
+.room-popup-container .popup .join-room .input-warning span {
   font-size: 0.7rem;
   font-family: Arial, Helvetica, sans-serif;
   color: #ff4b4b;
 }
-.popup-container .popup .join-room input {
+.room-popup-container .popup .join-room input {
   border: 1px solid var(--border-color);
   padding: 10px 10px;
   text-align: center;
@@ -155,7 +155,7 @@ body {
   font-size: 0.9rem;
   font-family: fuzzyBubbles;
 }
-.popup-container .popup .join-room input:focus {
+.room-popup-container .popup .join-room input:focus {
   outline: none;
 }
 
