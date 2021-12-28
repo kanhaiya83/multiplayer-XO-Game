@@ -359,7 +359,7 @@ socket.on("changedOpponentUsername", async ({ username }) => {
 });
 //when opponent make a move
 socket.on("opponentMoved", (m) => {
-  showXorO(frames[m.place - 1], game.playerSide == "x" ? "o" : "x");
+  showXorO(frames[m.place], game.playerSide == "x" ? "o" : "x");
   showYourTurn(true);
 });
 
